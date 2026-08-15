@@ -1,0 +1,239 @@
+<div class="space-y-6 animate-fade-in pb-12">
+  
+  <!-- Welcome Hero Banner -->
+  <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-cyan-600 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+    <div class="absolute -right-8 -bottom-8 w-56 h-56 bg-white/10 rounded-full blur-2xl"></div>
+    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-white/20 text-white backdrop-blur-md inline-block mb-3">
+          Espace Particulier & Entreprise
+        </span>
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          Bonjour, {{ authService.currentUser()?.username || 'Client' }} 👋
+        </h1>
+        <p class="text-indigo-100 text-sm mt-1 max-w-xl">
+          Suivez vos réparations en direct ou déposez une nouvelle demande avec diagnostic IA instantané.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a
+          routerLink="/client/nouvelle-demande"
+          class="px-5 py-3 rounded-2xl bg-white text-indigo-700 font-bold text-sm hover:bg-slate-50 transition shadow-lg flex items-center gap-2">
+          <i class="bi bi-plus-circle-fill text-indigo-600 text-base"></i>
+          <span>Faire réparer un ordinateur</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Metrics Grid -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    
+    <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow card-hover">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Demandes Totales</span>
+        <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+          <i class="bi bi-laptop text-lg"></i>
+        </div>
+      </div>
+      <p class="text-2xl font-black text-slate-900">{{ demandes().length }}</p>
+      <span class="text-[11px] text-slate-500 font-medium">Historique complet</span>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow card-hover">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">En cours</span>
+        <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+          <i class="bi bi-gear-wide-connected text-lg"></i>
+        </div>
+      </div>
+      <p class="text-2xl font-black text-indigo-600">2</p>
+      <span class="text-[11px] text-indigo-600 font-medium">En atelier technique</span>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow card-hover">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Devis à Valider</span>
+        <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+          <i class="bi bi-file-earmark-text text-lg"></i>
+        </div>
+      </div>
+      <p class="text-2xl font-black text-amber-600">1</p>
+      <span class="text-[11px] text-amber-600 font-medium">Action requise</span>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow card-hover">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Terminées</span>
+        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <i class="bi bi-check-circle-fill text-lg"></i>
+        </div>
+      </div>
+      <p class="text-2xl font-black text-emerald-600">1</p>
+      <span class="text-[11px] text-emerald-600 font-medium">Prêtes & Récupérées</span>
+    </div>
+
+  </div>
+
+  <!-- Interactive Live Repair Tracker (Stepper) -->
+  <div *ngIf="activeDemande()" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 card-shadow space-y-6">
+    
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold px-2.5 py-1 rounded-full" [ngClass]="getStatusBadgeClass(activeDemande()!.statut)">
+            {{ getStatusLabel(activeDemande()!.statut) }}
+          </span>
+          <span class="text-xs text-slate-400">Demande #{{ activeDemande()!.id }}</span>
+        </div>
+        <h3 class="text-lg sm:text-xl font-black text-slate-900 mt-1.5 flex items-center gap-2">
+          <i class="bi bi-laptop text-indigo-600"></i>
+          {{ activeDemande()!.marque_ordinateur }} {{ activeDemande()!.modele_ordinateur }}
+        </h3>
+        <p class="text-xs text-slate-500 mt-0.5">{{ activeDemande()!.description_probleme }}</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a routerLink="/client/messages" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition">
+          <i class="bi bi-chat-dots-fill text-indigo-600"></i>
+          <span>Contacter réparateur</span>
+        </a>
+        <a routerLink="/client/devis" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-sm">
+          <i class="bi bi-file-earmark-check"></i>
+          <span>Voir devis</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Stepper Pipeline (1 to 6 steps) -->
+    <div>
+      <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-6">
+        Progression du cycle d'intervention :
+      </h4>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        
+        <!-- Step 1 -->
+        <div class="p-3 rounded-2xl border text-center transition"
+          [ngClass]="getStepNumber(activeDemande()!.statut) >= 1 ? 'bg-indigo-50/60 border-indigo-200 text-indigo-900' : 'bg-slate-50 border-slate-200 text-slate-400'">
+          <div class="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-xs"
+            [ngClass]="getStepNumber(activeDemande()!.statut) >= 1 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'">
+            <i *ngIf="getStepNumber(activeDemande()!.statut) > 1" class="bi bi-check-lg"></i>
+            <span *ngIf="getStepNumber(activeDemande()!.statut) <= 1">1</span>
+          </div>
+          <p class="text-xs font-bold">Demande envoyée</p>
+          <span class="text-[10px] opacity-80 block mt-0.5">Analyse IA</span>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="p-3 rounded-2xl border text-center transition"
+          [ngClass]="getStepNumber(activeDemande()!.statut) >= 2 ? 'bg-indigo-50/60 border-indigo-200 text-indigo-900' : 'bg-slate-50 border-slate-200 text-slate-400'">
+          <div class="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-xs"
+            [ngClass]="getStepNumber(activeDemande()!.statut) >= 2 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'">
+            <i *ngIf="getStepNumber(activeDemande()!.statut) > 2" class="bi bi-check-lg"></i>
+            <span *ngIf="getStepNumber(activeDemande()!.statut) <= 2">2</span>
+          </div>
+          <p class="text-xs font-bold">Diagnostic</p>
+          <span class="text-[10px] opacity-80 block mt-0.5">Examen technique</span>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="p-3 rounded-2xl border text-center transition"
+          [ngClass]="getStepNumber(activeDemande()!.statut) >= 3 ? 'bg-indigo-50/60 border-indigo-200 text-indigo-900' : 'bg-slate-50 border-slate-200 text-slate-400'">
+          <div class="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-xs"
+            [ngClass]="getStepNumber(activeDemande()!.statut) >= 3 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'">
+            <i *ngIf="getStepNumber(activeDemande()!.statut) > 3" class="bi bi-check-lg"></i>
+            <span *ngIf="getStepNumber(activeDemande()!.statut) <= 3">3</span>
+          </div>
+          <p class="text-xs font-bold">Devis chiffré</p>
+          <span class="text-[10px] opacity-80 block mt-0.5">Validation client</span>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="p-3 rounded-2xl border text-center transition"
+          [ngClass]="getStepNumber(activeDemande()!.statut) >= 4 ? 'bg-indigo-50/60 border-indigo-200 text-indigo-900' : 'bg-slate-50 border-slate-200 text-slate-400'">
+          <div class="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-xs"
+            [ngClass]="getStepNumber(activeDemande()!.statut) >= 4 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'">
+            <i *ngIf="getStepNumber(activeDemande()!.statut) > 4" class="bi bi-check-lg"></i>
+            <span *ngIf="getStepNumber(activeDemande()!.statut) <= 4">4</span>
+          </div>
+          <p class="text-xs font-bold">Réparation</p>
+          <span class="text-[10px] opacity-80 block mt-0.5">En atelier</span>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="p-3 rounded-2xl border text-center transition"
+          [ngClass]="getStepNumber(activeDemande()!.statut) >= 5 ? 'bg-indigo-50/60 border-indigo-200 text-indigo-900' : 'bg-slate-50 border-slate-200 text-slate-400'">
+          <div class="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-xs"
+            [ngClass]="getStepNumber(activeDemande()!.statut) >= 5 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'">
+            <i *ngIf="getStepNumber(activeDemande()!.statut) > 5" class="bi bi-check-lg"></i>
+            <span *ngIf="getStepNumber(activeDemande()!.statut) <= 5">5</span>
+          </div>
+          <p class="text-xs font-bold">Prêt & Paiement</p>
+          <span class="text-[10px] opacity-80 block mt-0.5">Règlement</span>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="p-3 rounded-2xl border text-center transition"
+          [ngClass]="getStepNumber(activeDemande()!.statut) >= 6 ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-400'">
+          <div class="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-xs"
+            [ngClass]="getStepNumber(activeDemande()!.statut) >= 6 ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-600'">
+            <i *ngIf="getStepNumber(activeDemande()!.statut) >= 6" class="bi bi-check-lg"></i>
+            <span *ngIf="getStepNumber(activeDemande()!.statut) < 6">6</span>
+          </div>
+          <p class="text-xs font-bold">Clôture & Avis</p>
+          <span class="text-[10px] opacity-80 block mt-0.5">Évaluation</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Recent Demands Table / List -->
+  <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 card-shadow space-y-4">
+    <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+      <div>
+        <h3 class="text-lg font-black text-slate-900">Mes Demandes Récentes</h3>
+        <p class="text-xs text-slate-500">Consultez l'historique et l'avancement de vos réparations.</p>
+      </div>
+      <a routerLink="/client/demandes" class="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+        <span>Tout voir</span>
+        <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="divide-y divide-slate-100">
+      <div *ngFor="let demande of demandes()" class="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/80 p-3 rounded-2xl transition">
+        <div class="flex items-start gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5 font-bold">
+            <i class="bi bi-laptop text-xl"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h4 class="text-sm font-bold text-slate-900">{{ demande.marque_ordinateur }} {{ demande.modele_ordinateur }}</h4>
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded-full" [ngClass]="getStatusBadgeClass(demande.statut)">
+                {{ getStatusLabel(demande.statut) }}
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 mt-1 line-clamp-1">{{ demande.description_probleme }}</p>
+            <div class="flex items-center gap-4 text-[11px] text-slate-400 mt-2">
+              <span class="flex items-center gap-1"><i class="bi bi-calendar3"></i> {{ demande.date_creation | date:'mediumDate' }}</span>
+              <span *ngIf="demande.reparateur" class="flex items-center gap-1 text-slate-600 font-medium">
+                <i class="bi bi-tools text-teal-600"></i> Réparateur : {{ demande.reparateur.user.username }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 self-end sm:self-center">
+          <a routerLink="/client/devis" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition">
+            Détails
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

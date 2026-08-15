@@ -1,0 +1,136 @@
+<div class="space-y-6 animate-fade-in pb-12">
+  
+  <!-- Hero Tech Banner -->
+  <div class="bg-gradient-to-r from-teal-900 via-slate-900 to-cyan-950 rounded-3xl p-6 sm:p-8 text-white border border-teal-800/40 shadow-2xl relative overflow-hidden">
+    <div class="absolute -right-8 -bottom-8 w-60 h-60 bg-teal-500/10 rounded-full blur-3xl"></div>
+    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 inline-block mb-3">
+          Atelier Professionnel Réparateur
+        </span>
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          Bienvenue dans votre atelier, {{ authService.currentUser()?.username || 'Koffi Tech' }} 🛠️
+        </h1>
+        <p class="text-slate-300 text-sm mt-1 max-w-xl">
+          Gérez vos interventions en cours, émettez vos diagnostics techniques et transmettez vos devis aux clients.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a
+          routerLink="/reparateur/atelier"
+          class="px-5 py-3 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition shadow-lg flex items-center gap-2">
+          <i class="bi bi-wrench-adjustable-circle text-base"></i>
+          <span>Ouvrir l'Atelier Diagnostic</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Tech Grid -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    
+    <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700 shadow-lg">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold uppercase text-slate-400">Demandes Reçues</span>
+        <div class="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center font-bold">
+          <i class="bi bi-inbox-fill text-base"></i>
+        </div>
+      </div>
+      <p class="text-2xl font-black text-white">3</p>
+      <span class="text-[11px] text-teal-400 font-medium">1 à confirmer</span>
+    </div>
+
+    <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700 shadow-lg">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold uppercase text-slate-400">En cours d'intervention</span>
+        <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold">
+          <i class="bi bi-cpu text-base"></i>
+        </div>
+      </div>
+      <p class="text-2xl font-black text-cyan-400">2</p>
+      <span class="text-[11px] text-slate-400 font-medium">Sur banc d'essai</span>
+    </div>
+
+    <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700 shadow-lg">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold uppercase text-slate-400">Chiffre d'Affaires</span>
+        <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+          <i class="bi bi-cash-stack text-base"></i>
+        </div>
+      </div>
+      <p class="text-2xl font-black text-emerald-400">385 000 F</p>
+      <span class="text-[11px] text-slate-400 font-medium">Ce mois-ci</span>
+    </div>
+
+    <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700 shadow-lg">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold uppercase text-slate-400">Note Globale</span>
+        <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+          <i class="bi bi-star-fill text-base"></i>
+        </div>
+      </div>
+      <p class="text-2xl font-black text-amber-400">4.8 / 5</p>
+      <span class="text-[11px] text-slate-400 font-medium">32 avis clients</span>
+    </div>
+
+  </div>
+
+  <!-- Priority Queue: Demandes Requiring Attention -->
+  <div class="bg-slate-800/90 rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-xl space-y-5">
+    <div class="flex items-center justify-between pb-4 border-b border-slate-700">
+      <div>
+        <h3 class="text-lg font-black text-white flex items-center gap-2">
+          <i class="bi bi-bell-fill text-amber-400"></i> File des Demandes Assignées
+        </h3>
+        <p class="text-xs text-slate-400">Validez la prise en charge pour débuter le diagnostic technique.</p>
+      </div>
+      <a routerLink="/reparateur/demandes" class="text-xs font-bold text-teal-400 hover:underline">
+        Voir toutes les demandes →
+      </a>
+    </div>
+
+    <div class="space-y-4">
+      <div
+        *ngFor="let demande of demandes()"
+        class="p-5 rounded-2xl bg-slate-900/90 border border-slate-700/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/30 flex items-center justify-center shrink-0 mt-0.5 text-xl font-bold">
+            <i class="bi bi-laptop"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h4 class="text-sm font-bold text-white">{{ demande.marque_ordinateur }} {{ demande.modele_ordinateur }}</h4>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-teal-300 border border-teal-500/30">
+                #{{ demande.id }}
+              </span>
+            </div>
+            <p class="text-xs text-slate-300 mt-1 leading-relaxed">{{ demande.description_probleme }}</p>
+            <div class="flex items-center gap-4 text-[11px] text-slate-400 mt-2">
+              <span><i class="bi bi-person text-slate-500"></i> Client : {{ demande.client.user.username }} ({{ demande.client.user.ville }})</span>
+              <span><i class="bi bi-calendar text-slate-500"></i> Reçu le : {{ demande.date_creation | date:'mediumDate' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2.5 self-end md:self-center shrink-0">
+          <button
+            type="button"
+            (click)="refuser(demande)"
+            class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-red-950/40 text-slate-300 hover:text-red-400 text-xs font-bold border border-slate-700 transition">
+            Refuser
+          </button>
+          <button
+            type="button"
+            (click)="accepter(demande)"
+            class="px-5 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition shadow-md">
+            Accepter la demande
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

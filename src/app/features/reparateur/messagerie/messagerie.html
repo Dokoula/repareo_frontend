@@ -1,0 +1,78 @@
+<div class="space-y-6 animate-fade-in pb-12">
+  
+  <div class="bg-slate-800/90 rounded-3xl p-6 border border-slate-700 shadow-xl flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-md">
+        <i class="bi bi-person"></i>
+      </div>
+      <div>
+        <h1 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
+          Discussion avec Marie Client
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        </h1>
+        <p class="text-xs text-slate-400">Demande #101 • Dell XPS 15 9510</p>
+      </div>
+    </div>
+
+    <span class="text-xs px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 font-bold border border-teal-500/30">
+      Direct Client
+    </span>
+  </div>
+
+  <div class="bg-slate-800/90 rounded-3xl border border-slate-700 shadow-xl flex flex-col h-[520px] overflow-hidden">
+    
+    <div class="flex-1 p-6 overflow-y-auto space-y-4 bg-slate-900/50">
+      <div
+        *ngFor="let msg of messages()"
+        [class.justify-end]="msg.expediteur.role === 'REPARATEUR'"
+        [class.justify-start]="msg.expediteur.role !== 'REPARATEUR'"
+        class="flex items-end gap-2.5">
+        
+        <div *ngIf="msg.expediteur.role !== 'REPARATEUR'" class="w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0">
+          M
+        </div>
+
+        <div
+          [class.bg-teal-500]="msg.expediteur.role === 'REPARATEUR'"
+          [class.text-slate-950]="msg.expediteur.role === 'REPARATEUR'"
+          [class.font-medium]="msg.expediteur.role === 'REPARATEUR'"
+          [class.rounded-br-xs]="msg.expediteur.role === 'REPARATEUR'"
+          [class.bg-slate-800]="msg.expediteur.role !== 'REPARATEUR'"
+          [class.text-slate-200]="msg.expediteur.role !== 'REPARATEUR'"
+          [class.rounded-bl-xs]="msg.expediteur.role !== 'REPARATEUR'"
+          [class.border]="msg.expediteur.role !== 'REPARATEUR'"
+          [class.border-slate-700]="msg.expediteur.role !== 'REPARATEUR'"
+          class="max-w-md p-3.5 rounded-2xl text-xs leading-relaxed shadow-sm">
+          
+          <p>{{ msg.contenu }}</p>
+          <span
+            [class.text-slate-900]="msg.expediteur.role === 'REPARATEUR'"
+            [class.text-slate-400]="msg.expediteur.role !== 'REPARATEUR'"
+            class="text-[10px] block mt-1 text-right font-semibold">
+            {{ msg.date_envoi | date:'shortTime' }}
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="p-4 bg-slate-800 border-t border-slate-700 flex items-center gap-3">
+      <input
+        type="text"
+        [(ngModel)]="nouveauMessage"
+        (keyup.enter)="envoyer()"
+        placeholder="Répondre au client..."
+        class="flex-1 px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+      />
+      <button
+        type="button"
+        (click)="envoyer()"
+        class="px-5 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs flex items-center gap-1.5 transition shadow-sm">
+        <i class="bi bi-send-fill"></i>
+        <span>Envoyer</span>
+      </button>
+    </div>
+
+  </div>
+
+</div>

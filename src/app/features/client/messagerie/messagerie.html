@@ -1,0 +1,81 @@
+<div class="space-y-6 animate-fade-in pb-12">
+  
+  <!-- Header -->
+  <div class="bg-white rounded-3xl p-6 border border-slate-200 card-shadow flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-teal-500 to-cyan-500 text-white flex items-center justify-center font-bold text-lg shadow-md">
+        <i class="bi bi-person-workspace"></i>
+      </div>
+      <div>
+        <h1 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
+          Koffi Tech (Atelier Pro)
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        </h1>
+        <p class="text-xs text-slate-500">Demande #101 • Dell XPS 15 (Alimentation)</p>
+      </div>
+    </div>
+
+    <span class="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-700 font-bold border border-slate-200">
+      En direct
+    </span>
+  </div>
+
+  <!-- Chat Box Container -->
+  <div class="bg-white rounded-3xl border border-slate-200 card-shadow flex flex-col h-[520px] overflow-hidden">
+    
+    <!-- Messages Scroll Area -->
+    <div class="flex-1 p-6 overflow-y-auto space-y-4 bg-slate-50/50">
+      <div
+        *ngFor="let msg of messages()"
+        [class.justify-end]="msg.expediteur.role === 'CLIENT'"
+        [class.justify-start]="msg.expediteur.role !== 'CLIENT'"
+        class="flex items-end gap-2.5">
+        
+        <div *ngIf="msg.expediteur.role !== 'CLIENT'" class="w-7 h-7 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0">
+          K
+        </div>
+
+        <div
+          [class.bg-indigo-600]="msg.expediteur.role === 'CLIENT'"
+          [class.text-white]="msg.expediteur.role === 'CLIENT'"
+          [class.rounded-br-xs]="msg.expediteur.role === 'CLIENT'"
+          [class.bg-white]="msg.expediteur.role !== 'CLIENT'"
+          [class.text-slate-800]="msg.expediteur.role !== 'CLIENT'"
+          [class.rounded-bl-xs]="msg.expediteur.role !== 'CLIENT'"
+          [class.border]="msg.expediteur.role !== 'CLIENT'"
+          [class.border-slate-200]="msg.expediteur.role !== 'CLIENT'"
+          class="max-w-md p-3.5 rounded-2xl text-xs leading-relaxed shadow-xs">
+          
+          <p>{{ msg.contenu }}</p>
+          <span
+            [class.text-indigo-200]="msg.expediteur.role === 'CLIENT'"
+            [class.text-slate-400]="msg.expediteur.role !== 'CLIENT'"
+            class="text-[10px] block mt-1 text-right">
+            {{ msg.date_envoi | date:'shortTime' }}
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Input Bar -->
+    <div class="p-4 bg-white border-t border-slate-200 flex items-center gap-3">
+      <input
+        type="text"
+        [(ngModel)]="nouveauMessage"
+        (keyup.enter)="envoyer()"
+        placeholder="Écrivez votre message au technicien..."
+        class="flex-1 px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white"
+      />
+      <button
+        type="button"
+        (click)="envoyer()"
+        class="px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-sm">
+        <i class="bi bi-send-fill"></i>
+        <span>Envoyer</span>
+      </button>
+    </div>
+
+  </div>
+
+</div>

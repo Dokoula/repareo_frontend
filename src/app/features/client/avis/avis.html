@@ -1,0 +1,101 @@
+<div class="space-y-6 animate-fade-in pb-12">
+  
+  <!-- Header -->
+  <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 card-shadow">
+    <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 inline-block mb-2">
+      Confiance & Qualité
+    </span>
+    <h1 class="text-2xl font-black text-slate-900">Avis & Évaluations des Réparations</h1>
+    <p class="text-xs sm:text-sm text-slate-500 mt-1">
+      Partagez votre expérience sur la qualité de l’intervention et consultez les retours de la communauté.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    
+    <!-- Left: Leave Review Form -->
+    <div class="lg:col-span-6 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 card-shadow space-y-5">
+      <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100 flex items-center gap-2">
+        <i class="bi bi-pencil-square text-indigo-600"></i> Évaluer votre dernière intervention
+      </h3>
+
+      <div class="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 flex items-center justify-between">
+        <div>
+          <h4 class="text-xs font-bold text-slate-900">Dell XPS 15 (Alimentation)</h4>
+          <p class="text-[11px] text-slate-500">Réparateur : Koffi Tech (Cocody)</p>
+        </div>
+        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+          Terminée
+        </span>
+      </div>
+
+      <form [formGroup]="avisForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        
+        <!-- Stars Picker -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+            Votre note globale :
+          </label>
+          <div class="flex items-center gap-2 text-2xl text-amber-400">
+            <button
+              *ngFor="let s of [1, 2, 3, 4, 5]"
+              type="button"
+              (click)="setStars(s)"
+              class="hover:scale-125 transition">
+              <i [class]="s <= selectedStars() ? 'bi-star-fill' : 'bi-star'"></i>
+            </button>
+            <span class="text-xs font-black text-slate-700 ml-2">({{ selectedStars() }} / 5)</span>
+          </div>
+        </div>
+
+        <!-- Comment -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            Votre commentaire / retour d'expérience *
+          </label>
+          <textarea
+            formControlName="commentaire"
+            rows="4"
+            placeholder="Qualité du travail, ponctualité, explications fournies par le réparateur..."
+            class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white"></textarea>
+          <p *ngIf="avisForm.get('commentaire')?.invalid && avisForm.get('commentaire')?.touched" class="text-red-500 text-xs mt-1">
+            Veuillez entrer au moins 10 caractères.
+          </p>
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="isSubmitting()"
+          class="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md shadow-indigo-500/25 transition flex items-center justify-center gap-2">
+          <i class="bi bi-send"></i>
+          <span>Publier mon avis</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Right: Community Reviews List -->
+    <div class="lg:col-span-6 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 card-shadow space-y-4">
+      <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100 flex items-center gap-2">
+        <i class="bi bi-chat-quote-fill text-amber-500"></i> Avis Récents de la Communauté
+      </h3>
+
+      <div class="space-y-4">
+        <div *ngFor="let a of avisList()" class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="text-xs font-bold text-slate-900">{{ a.client.user.username }}</h4>
+              <p class="text-[10px] text-slate-500">Pour le réparateur : <strong class="text-teal-700">{{ a.reparateur.user.username }}</strong></p>
+            </div>
+            <div class="flex items-center text-amber-400 text-xs">
+              <i *ngFor="let s of [1,2,3,4,5]" [class]="s <= a.note ? 'bi-star-fill' : 'bi-star'"></i>
+            </div>
+          </div>
+          <p class="text-xs text-slate-700 leading-relaxed">{{ a.commentaire }}</p>
+          <span class="text-[10px] text-slate-400 block">{{ a.date_avis | date:'mediumDate' }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

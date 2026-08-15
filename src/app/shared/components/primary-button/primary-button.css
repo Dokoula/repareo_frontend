@@ -1,0 +1,70 @@
+.btn-primary {
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: .6rem;
+
+    background: #2563EB;
+    color: white;
+
+    border: none;
+
+    border-radius: 12px;
+
+    padding: .9rem 1.5rem;
+
+    font-size: .95rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .25s ease;
+
+}
+
+.btn-primary:hover:not(:disabled){
+
+    background:#1D4ED8;
+
+}
+
+.btn-primary:disabled{
+
+    opacity:.65;
+
+    cursor:not-allowed;
+
+}
+
+.full-width{
+
+    width:100%;
+
+}
+
+.spinner{
+
+    width:18px;
+
+    height:18px;
+
+    border:2px solid rgba(255,255,255,.4);
+
+    border-top:2px solid white;
+
+    border-radius:50%;
+
+    animation:spin .8s linear infinite;
+
+}
+
+@keyframes spin{
+
+    to{
+
+        transform:rotate(360deg);
+
+    }
+
+}

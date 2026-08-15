@@ -1,0 +1,158 @@
+<div class="space-y-6 animate-fade-in pb-12">
+  
+  <!-- Top Title & Action -->
+  <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-black text-slate-900">Mes Demandes de Réparation</h1>
+      <p class="text-xs sm:text-sm text-slate-500 mt-1">
+        Suivez en temps réel l'ensemble de vos dossiers et équipements confiés à nos experts.
+      </p>
+    </div>
+    <a
+      routerLink="/client/nouvelle-demande"
+      class="px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-500/20 transition flex items-center gap-2 self-start sm:self-center">
+      <i class="bi bi-plus-lg"></i>
+      <span>Nouvelle Demande (IA)</span>
+    </a>
+  </div>
+
+  <!-- Filter Pills -->
+  <div class="flex items-center gap-2 overflow-x-auto pb-1">
+    <button
+      (click)="setFilter('TOUS')"
+      [class.bg-indigo-600]="selectedFilter() === 'TOUS'"
+      [class.text-white]="selectedFilter() === 'TOUS'"
+      [class.bg-white]="selectedFilter() !== 'TOUS'"
+      [class.text-slate-700]="selectedFilter() !== 'TOUS'"
+      class="px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 shadow-xs transition">
+      Toutes ({{ demandes().length }})
+    </button>
+    <button
+      (click)="setFilter('EN_COURS')"
+      [class.bg-indigo-600]="selectedFilter() === 'EN_COURS'"
+      [class.text-white]="selectedFilter() === 'EN_COURS'"
+      [class.bg-white]="selectedFilter() !== 'EN_COURS'"
+      [class.text-slate-700]="selectedFilter() !== 'EN_COURS'"
+      class="px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 shadow-xs transition">
+      En atelier
+    </button>
+    <button
+      (click)="setFilter('DEVIS')"
+      [class.bg-indigo-600]="selectedFilter() === 'DEVIS'"
+      [class.text-white]="selectedFilter() === 'DEVIS'"
+      [class.bg-white]="selectedFilter() !== 'DEVIS'"
+      [class.text-slate-700]="selectedFilter() !== 'DEVIS'"
+      class="px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 shadow-xs transition">
+      Devis à valider
+    </button>
+    <button
+      (click)="setFilter('TERMINEES')"
+      [class.bg-indigo-600]="selectedFilter() === 'TERMINEES'"
+      [class.text-white]="selectedFilter() === 'TERMINEES'"
+      [class.bg-white]="selectedFilter() !== 'TERMINEES'"
+      [class.text-slate-700]="selectedFilter() !== 'TERMINEES'"
+      class="px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 shadow-xs transition">
+      Terminées
+    </button>
+  </div>
+
+  <!-- Demandes Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div
+      *ngFor="let demande of filteredDemandes()"
+      class="bg-white rounded-3xl p-6 border border-slate-200 card-shadow card-hover flex flex-col justify-between space-y-4">
+      
+      <div>
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <span class="text-[11px] font-bold px-2.5 py-1 rounded-full" [ngClass]="getStatusBadgeClass(demande.statut)">
+            {{ getStatusLabel(demande.statut) }}
+          </span>
+          <span class="text-xs text-slate-400">#{{ demande.id }}</span>
+        </div>
+
+        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <i class="bi bi-laptop text-indigo-600"></i>
+          {{ demande.marque_ordinateur }} {{ demande.modele_ordinateur }}
+        </h3>
+        
+        <p class="text-xs text-slate-600 mt-2 leading-relaxed line-clamp-2">
+          {{ demande.description_probleme }}
+        </p>
+
+        <div class="mt-4 pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-500">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-400">Catégorie :</span>
+            <span class="font-bold text-slate-800">{{ demande.categorie_competence?.nom || 'Diagnostic IA' }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-400">Réparateur assigné :</span>
+            <span class="font-bold text-teal-700">{{ demande.reparateur ? demande.reparateur.user.username : 'Non assigné' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-2">
+        <span class="text-[11px] text-slate-400">
+          {{ demande.date_creation | date:'mediumDate' }}
+        </span>
+        <div class="flex items-center gap-2">
+          <button
+            (click)="openDetail(demande)"
+            class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition">
+            Consulter
+          </button>
+          <a
+            routerLink="/client/devis"
+            class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-xs">
+            Devis
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div *ngIf="selectedDemande()" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div (click)="closeDetail()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"></div>
+    <div class="relative bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl z-10 space-y-5 animate-fade-in border border-slate-100">
+      
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div>
+          <span class="text-xs font-bold px-2 py-0.5 rounded-full" [ngClass]="getStatusBadgeClass(selectedDemande()!.statut)">
+            {{ getStatusLabel(selectedDemande()!.statut) }}
+          </span>
+          <h3 class="text-lg font-black text-slate-900 mt-1">Dossier #{{ selectedDemande()!.id }}</h3>
+        </div>
+        <button (click)="closeDetail()" class="p-2 rounded-xl text-slate-400 hover:bg-slate-100">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <span class="text-slate-400 font-bold uppercase tracking-wider block mb-1">Équipement</span>
+          <p class="font-extrabold text-sm text-slate-900">{{ selectedDemande()!.marque_ordinateur }} - {{ selectedDemande()!.modele_ordinateur }}</p>
+        </div>
+        <div>
+          <span class="text-slate-400 font-bold uppercase tracking-wider block mb-1">Description</span>
+          <p class="text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-200">{{ selectedDemande()!.description_probleme }}</p>
+        </div>
+        <div *ngIf="selectedDemande()!.reparateur">
+          <span class="text-slate-400 font-bold uppercase tracking-wider block mb-1">Technicien en charge</span>
+          <p class="font-bold text-teal-800">{{ selectedDemande()!.reparateur!.user.username }} ({{ selectedDemande()!.reparateur!.user.ville }})</p>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+        <a routerLink="/client/messages" (click)="closeDetail()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-800 font-bold text-xs">
+          Envoyer un message
+        </a>
+        <button (click)="closeDetail()" class="px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs">
+          Fermer
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

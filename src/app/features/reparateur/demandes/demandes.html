@@ -1,0 +1,60 @@
+<div class="space-y-6 animate-fade-in pb-12">
+  
+  <!-- Header -->
+  <div class="bg-slate-800/90 rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-xl flex items-center justify-between">
+    <div>
+      <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 inline-block mb-2">
+        Flux d'Entrée
+      </span>
+      <h1 class="text-2xl font-black text-white">Demandes d'Intervention Assignées</h1>
+      <p class="text-xs sm:text-sm text-slate-400 mt-1">
+        Consultez les demandes transmises par les clients de votre secteur et confirmez leur prise en charge.
+      </p>
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    <div
+      *ngFor="let demande of demandes()"
+      class="bg-slate-800/90 rounded-3xl p-6 border border-slate-700 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-6">
+      
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-teal-500/10 text-teal-400 border border-teal-500/30 flex items-center justify-center shrink-0 font-bold text-xl">
+          <i class="bi bi-laptop"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="text-base font-bold text-white">{{ demande.marque_ordinateur }} - {{ demande.modele_ordinateur }}</h3>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-900 text-teal-400 border border-slate-700">
+              #{{ demande.id }}
+            </span>
+          </div>
+          <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">{{ demande.description_probleme }}</p>
+          
+          <div class="flex flex-wrap items-center gap-4 text-xs text-slate-400 mt-3">
+            <span><i class="bi bi-geo-alt text-teal-400"></i> {{ demande.client.user.ville }}</span>
+            <span><i class="bi bi-person text-teal-400"></i> Client : {{ demande.client.user.username }}</span>
+            <span><i class="bi bi-telephone text-teal-400"></i> {{ demande.client.user.telephone }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 self-end md:self-center shrink-0">
+        <button
+          type="button"
+          (click)="refuser(demande)"
+          class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-red-950/40 text-slate-400 hover:text-red-400 text-xs font-bold border border-slate-700 transition">
+          Refuser
+        </button>
+        <button
+          type="button"
+          (click)="accepter(demande)"
+          class="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition shadow-md">
+          Prendre en charge
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

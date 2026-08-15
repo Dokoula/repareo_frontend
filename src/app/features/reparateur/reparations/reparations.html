@@ -1,0 +1,77 @@
+<div class="space-y-6 animate-fade-in pb-12">
+  
+  <!-- Header -->
+  <div class="bg-slate-800/90 rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-xl">
+    <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 inline-block mb-2">
+      Banc d'Intervention
+    </span>
+    <h1 class="text-2xl font-black text-white">Suivi des Réparations en Atelier</h1>
+    <p class="text-xs sm:text-sm text-slate-400 mt-1">
+      Mettez à jour le statut des travaux pour tenir informé le client et clôturez l'intervention.
+    </p>
+  </div>
+
+  <div class="space-y-6">
+    <div
+      *ngFor="let rep of reparations()"
+      class="bg-slate-800/90 rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-xl space-y-6">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-700">
+        <div>
+          <div class="flex items-center gap-2">
+            <span
+              class="text-xs font-bold px-2.5 py-1 rounded-full"
+              [ngClass]="rep.statut === 'PRET' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'">
+              {{ rep.statut === 'PRET' ? 'Appareil Prêt pour Récupération' : 'En Cours d’Intervention' }}
+            </span>
+            <span class="text-xs text-slate-400">Intervention #{{ rep.id }}</span>
+          </div>
+          <h3 class="text-lg font-black text-white mt-1">
+            Dell XPS 15 9510 (Client : Marie Client)
+          </h3>
+        </div>
+
+        <div class="text-right text-xs text-slate-400">
+          <span>Début : <strong>{{ rep.date_debut | date:'mediumDate' }}</strong></span>
+        </div>
+      </div>
+
+      <!-- Workshop Progress Notes -->
+      <div class="p-5 rounded-2xl bg-slate-900 border border-slate-700 space-y-3">
+        <h4 class="text-xs font-bold uppercase text-slate-400 flex items-center gap-2">
+          <i class="bi bi-journal-text text-teal-400"></i> Rapport & Travaux effectués
+        </h4>
+        <textarea
+          [(ngModel)]="commentaireFin"
+          rows="3"
+          placeholder="Détaillez les réparations effectuées avant de clôturer..."
+          class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+      </div>
+
+      <!-- Control buttons -->
+      <div class="flex items-center justify-between pt-2">
+        <span class="text-xs text-slate-400">
+          Devis associé : N° #301 (45 000 FCFA)
+        </span>
+
+        <div class="flex items-center gap-3">
+          <button
+            *ngIf="rep.statut !== 'PRET'"
+            type="button"
+            (click)="terminer(rep)"
+            class="px-6 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition shadow-lg flex items-center gap-2">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>Marquer comme Prêt & Clôturer</span>
+          </button>
+
+          <span *ngIf="rep.statut === 'PRET'" class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+            <i class="bi bi-patch-check-fill text-lg"></i>
+            <span>Intervention clôturée avec succès</span>
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

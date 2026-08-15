@@ -1,0 +1,38 @@
+<div class="space-y-6 animate-fade-in pb-12">
+  
+  <div class="bg-slate-800/90 rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 inline-block mb-2">
+        Réputation & Témoignages
+      </span>
+      <h1 class="text-2xl font-black text-white">Évaluations de votre Atelier</h1>
+      <p class="text-xs sm:text-sm text-slate-400 mt-1">
+        Consultez les notes et retours d'expérience laissés par vos clients après intervention.
+      </p>
+    </div>
+
+    <div class="p-4 rounded-2xl bg-slate-900 border border-slate-700 text-center">
+      <span class="text-2xl font-black text-amber-400">4.8 / 5</span>
+      <p class="text-[10px] text-slate-400 mt-0.5">Taux de satisfaction client : 98%</p>
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    <div *ngFor="let a of avisList()" class="bg-slate-800/90 rounded-3xl p-6 border border-slate-700 shadow-lg space-y-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-sm font-bold text-white">{{ a.client.user.username }}</h3>
+          <p class="text-xs text-slate-400">{{ a.client.user.ville }} • Intervention #{{ a.id }}</p>
+        </div>
+        <div class="flex items-center text-amber-400 text-sm">
+          <i *ngFor="let s of [1,2,3,4,5]" [class]="s <= a.note ? 'bi-star-fill' : 'bi-star'"></i>
+        </div>
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed bg-slate-900/60 p-4 rounded-2xl border border-slate-700/60">
+        {{ a.commentaire }}
+      </p>
+      <span class="text-[10px] text-slate-500 block text-right">{{ a.date_avis | date:'mediumDate' }}</span>
+    </div>
+  </div>
+
+</div>

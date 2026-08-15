@@ -1,0 +1,61 @@
+<div class="space-y-6 animate-fade-in pb-12">
+  
+  <!-- Header -->
+  <div class="bg-slate-900/90 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 inline-block mb-2">
+        Data & Business Intelligence
+      </span>
+      <h1 class="text-2xl font-black text-white">Statistiques & Performance Plateforme</h1>
+      <p class="text-xs sm:text-sm text-slate-400 mt-1">
+        Rapports financiers, volumes d'interventions et indicateurs de croissance.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      (click)="exporterRapport()"
+      class="px-5 py-3 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-lg transition flex items-center gap-2 self-start sm:self-center">
+      <i class="bi bi-file-earmark-arrow-down-fill text-base"></i>
+      <span>Exporter le Rapport Global (PDF/Excel)</span>
+    </button>
+  </div>
+
+  <!-- Monthly Growth Bar Visualizer -->
+  <div class="bg-slate-900/90 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-6">
+    <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+      <div>
+        <h3 class="text-base font-black text-white">Évolution Mensuelle des Réparations Clôturées</h3>
+        <p class="text-xs text-slate-400">Croissance du volume d'interventions sur le 1er semestre</p>
+      </div>
+      <span class="text-xs font-black text-emerald-400">+121% vs 2025</span>
+    </div>
+
+    <div class="grid grid-cols-6 gap-3 items-end h-64 pt-6 pb-2 px-4 bg-slate-950/60 rounded-2xl border border-slate-800/80">
+      <div *ngFor="let item of monthlyData" class="flex flex-col items-center gap-2 h-full justify-end group">
+        <span class="text-[10px] text-purple-300 font-bold opacity-0 group-hover:opacity-100 transition">{{ item.repairs }} rep.</span>
+        <div
+          class="w-full max-w-[48px] bg-gradient-to-t from-indigo-600 to-purple-500 rounded-t-xl transition-all duration-500 group-hover:brightness-125 shadow-lg"
+          [style.height]="item.height"></div>
+        <span class="text-[11px] font-bold text-slate-400 mt-1">{{ item.month }}</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800">
+      <div class="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/60">
+        <span class="text-xs text-slate-400 font-bold">Panier moyen réparation</span>
+        <p class="text-lg font-black text-white mt-1">42 500 FCFA</p>
+      </div>
+      <div class="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/60">
+        <span class="text-xs text-slate-400 font-bold">Délai moyen d'intervention</span>
+        <p class="text-lg font-black text-purple-300 mt-1">2.4 jours</p>
+      </div>
+      <div class="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/60">
+        <span class="text-xs text-slate-400 font-bold">Taux de rétention client</span>
+        <p class="text-lg font-black text-emerald-400 mt-1">87.5%</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>

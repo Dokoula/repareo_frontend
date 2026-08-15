@@ -1,0 +1,172 @@
+<div class="space-y-6 animate-fade-in pb-12">
+  
+  <!-- Header -->
+  <div class="bg-slate-800/90 rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-xl">
+    <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 inline-block mb-2">
+      Atelier d'Expertise
+    </span>
+    <h1 class="text-2xl font-black text-white">Diagnostics & Chiffrage des Devis</h1>
+    <p class="text-xs sm:text-sm text-slate-400 mt-1">
+      Rédigez vos conclusions techniques et détaillez les montants de réparation pour accord du client.
+    </p>
+  </div>
+
+  <!-- Tabs Selector -->
+  <div class="flex items-center gap-3">
+    <button
+      type="button"
+      (click)="setTab('DIAGNOSTIC')"
+      [class.bg-teal-500]="activeTab() === 'DIAGNOSTIC'"
+      [class.text-slate-950]="activeTab() === 'DIAGNOSTIC'"
+      [class.bg-slate-800]="activeTab() !== 'DIAGNOSTIC'"
+      [class.text-slate-300]="activeTab() !== 'DIAGNOSTIC'"
+      class="px-5 py-2.5 rounded-2xl font-black text-xs transition flex items-center gap-2 border border-slate-700 shadow-xs">
+      <i class="bi bi-microchip"></i>
+      <span>1. Rédiger un Diagnostic Technique</span>
+    </button>
+    <button
+      type="button"
+      (click)="setTab('DEVIS')"
+      [class.bg-teal-500]="activeTab() === 'DEVIS'"
+      [class.text-slate-950]="activeTab() === 'DEVIS'"
+      [class.bg-slate-800]="activeTab() !== 'DEVIS'"
+      [class.text-slate-300]="activeTab() !== 'DEVIS'"
+      class="px-5 py-2.5 rounded-2xl font-black text-xs transition flex items-center gap-2 border border-slate-700 shadow-xs">
+      <i class="bi bi-receipt"></i>
+      <span>2. Élaborer un Devis Chiffré</span>
+    </button>
+  </div>
+
+  <!-- Diagnostic Form Tab -->
+  <div *ngIf="activeTab() === 'DIAGNOSTIC'" class="bg-slate-800/90 rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-xl max-w-3xl space-y-6">
+    <h3 class="text-base font-black text-white pb-3 border-b border-slate-700 flex items-center gap-2">
+      <i class="bi bi-wrench text-teal-400"></i> Nouveau Diagnostic Technique
+    </h3>
+
+    <form [formGroup]="diagnosticForm" (ngSubmit)="soumettreDiagnostic()" class="space-y-4">
+      
+      <div>
+        <label class="block text-xs font-bold uppercase text-slate-400 mb-1">
+          Dossier / Demande concernée
+        </label>
+        <select formControlName="demandeId" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200">
+          <option [value]="101">Demande #101 - Dell XPS 15 (Marie Client)</option>
+          <option [value]="102">Demande #102 - Apple MacBook Pro 14 (Marie Client)</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase text-slate-400 mb-1">
+          Panne réelle constatée à l'atelier *
+        </label>
+        <textarea
+          formControlName="panne_reelle"
+          rows="3"
+          placeholder="Explication technique détaillée du défaut détecté..."
+          class="w-full p-4 bg-slate-900 border border-slate-700 rounded-2xl text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+      </div>
+
+      <div class="flex items-center gap-4 py-2">
+        <label class="flex items-center gap-2 text-xs text-slate-300 font-bold cursor-pointer">
+          <input type="checkbox" formControlName="reparable" class="w-4 h-4 text-teal-500 rounded bg-slate-900 border-slate-700" />
+          <span>Appareil réparable</span>
+        </label>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase text-slate-400 mb-1">
+          Commentaires & Recommandations
+        </label>
+        <input
+          type="text"
+          formControlName="commentaire"
+          placeholder="Pièces à commander, précaution de sauvegarde..."
+          class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200"
+        />
+      </div>
+
+      <div class="pt-4 border-t border-slate-700">
+        <button
+          type="submit"
+          [disabled]="isSubmitting()"
+          class="px-6 py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs rounded-xl shadow-lg transition">
+          Enregistrer le diagnostic et passer au Devis →
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Devis Form Tab -->
+  <div *ngIf="activeTab() === 'DEVIS'" class="bg-slate-800/90 rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-xl max-w-3xl space-y-6">
+    <h3 class="text-base font-black text-white pb-3 border-b border-slate-700 flex items-center gap-2">
+      <i class="bi bi-file-earmark-spreadsheet text-teal-400"></i> Élaboration du Devis Client
+    </h3>
+
+    <form [formGroup]="devisForm" (ngSubmit)="soumettreDevis()" class="space-y-4">
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">
+            Frais de diagnostic (FCFA)
+          </label>
+          <input
+            type="number"
+            formControlName="montant_diagnostic"
+            class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200"
+          />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">
+            Coût pièces & main d'œuvre (FCFA)
+          </label>
+          <input
+            type="number"
+            formControlName="montant_reparation"
+            class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200"
+          />
+        </div>
+      </div>
+
+      <!-- Live Total Calculation Pill -->
+      <div class="p-4 rounded-2xl bg-teal-950/50 border border-teal-800/40 flex items-center justify-between">
+        <span class="text-xs font-bold text-teal-300">Montant Total Calculé :</span>
+        <span class="text-lg font-black text-teal-400">{{ getMontantTotal().toLocaleString() }} FCFA</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">
+            Délai estimé (Jours ouvrés)
+          </label>
+          <input
+            type="number"
+            formControlName="delai_estime"
+            class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200"
+          />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">
+            Taux de réussite estimé (%)
+          </label>
+          <input
+            type="number"
+            formControlName="pourcentage_reussite"
+            class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200"
+          />
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-slate-700">
+        <button
+          type="submit"
+          [disabled]="isSubmitting()"
+          class="px-6 py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs rounded-xl shadow-lg transition">
+          Transmettre le devis au client
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</div>

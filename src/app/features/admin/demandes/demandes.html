@@ -1,0 +1,50 @@
+<div class="space-y-6 animate-fade-in pb-12">
+  
+  <div class="bg-slate-900/90 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl">
+    <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 inline-block mb-2">
+      Audit & Traçabilité
+    </span>
+    <h1 class="text-2xl font-black text-white">Supervision des Demandes & Réparations</h1>
+    <p class="text-xs sm:text-sm text-slate-400 mt-1">
+      Visualisez l'état d'avancement de tous les dossiers informatiques de la plateforme.
+    </p>
+  </div>
+
+  <div class="bg-slate-900/90 rounded-3xl border border-slate-800 shadow-xl overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs text-slate-300">
+        <thead class="bg-slate-950/80 text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-800">
+          <tr>
+            <th class="p-4 pl-6">N° & Équipement</th>
+            <th class="p-4">Client</th>
+            <th class="p-4">Panne constatée</th>
+            <th class="p-4">Réparateur assigné</th>
+            <th class="p-4">Statut Actuel</th>
+            <th class="p-4 pr-6">Date de dépôt</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800/80">
+          <tr *ngFor="let d of demandes()" class="hover:bg-slate-800/50 transition">
+            <td class="p-4 pl-6 font-bold text-white">
+              #{{ d.id }} - {{ d.marque_ordinateur }} {{ d.modele_ordinateur }}
+            </td>
+            <td class="p-4 text-slate-300">{{ d.client.user.username }} ({{ d.client.user.ville }})</td>
+            <td class="p-4 text-slate-400 max-w-xs truncate">{{ d.description_probleme }}</td>
+            <td class="p-4">
+              <span class="font-bold" [ngClass]="d.reparateur ? 'text-teal-300' : 'text-slate-500'">
+                {{ d.reparateur ? d.reparateur.user.username : 'Non assigné' }}
+              </span>
+            </td>
+            <td class="p-4">
+              <span class="text-[10px] font-bold px-2.5 py-1 rounded-full border" [ngClass]="getStatusBadgeClass(d.statut)">
+                {{ d.statut }}
+              </span>
+            </td>
+            <td class="p-4 pr-6 text-slate-500">{{ d.date_creation | date:'mediumDate' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,12 @@
+<button [type]="type()" [disabled]="disabled() || loading()" (click)="onClick()" class="btn-primary" [class.full-width]="fullWidth()">
+    @if (loading()){
+        <span class="spinner"></span>
+    } @else {
+        @if (icon()){
+            <i class="{{ icon() }}"></i>
+        }
+        {{ text() }}
+    }
+</button>
+        
+  

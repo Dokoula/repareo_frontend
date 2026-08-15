@@ -1,0 +1,206 @@
+<div class="space-y-6 animate-fade-in pb-12">
+  
+  <!-- Header Title -->
+  <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 flex items-center gap-1">
+          <i class="bi bi-robot"></i> Diagnostic Assisté par IA
+        </span>
+      </div>
+      <h1 class="text-2xl font-black text-slate-900 mt-2">
+        Déposer une demande de réparation
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-500 mt-1">
+        Décrivez les symptômes de votre panne informatique. Notre IA classe automatiquement la demande et vous propose les meilleurs experts locaux.
+      </p>
+    </div>
+    <a routerLink="/client/demandes" class="self-start sm:self-center px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition flex items-center gap-1.5">
+      <i class="bi bi-arrow-left"></i> Mes demandes
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    
+    <!-- Form Column -->
+    <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 card-shadow space-y-6">
+      
+      <form [formGroup]="demandeForm" (ngSubmit)="onSubmit()" class="space-y-5">
+        
+        <!-- Marque -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            1. Marque de l'ordinateur *
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <i class="bi bi-laptop"></i>
+            </div>
+            <select
+              formControlName="marque_ordinateur"
+              class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white cursor-pointer appearance-none">
+              <option *ngFor="let m of marquesList" [value]="m">{{ m }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Modèle -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            2. Modèle précis *
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <i class="bi bi-tag"></i>
+            </div>
+            <input
+              type="text"
+              formControlName="modele_ordinateur"
+              placeholder="ex: XPS 15 9510, MacBook Pro 14 M1, ThinkPad T14..."
+              class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white"
+            />
+          </div>
+          <p *ngIf="demandeForm.get('modele_ordinateur')?.invalid && demandeForm.get('modele_ordinateur')?.touched" class="text-red-500 text-xs mt-1">
+            Le modèle de l'appareil est requis.
+          </p>
+        </div>
+
+        <!-- Quick Issue Presets -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+            Symptômes fréquents (cliquez pour pré-remplir) :
+          </label>
+          <div class="flex flex-wrap gap-2">
+            <button
+              *ngFor="let issue of problemesFrequents"
+              type="button"
+              (click)="applyQuickIssue(issue)"
+              class="text-[11px] font-semibold px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 border border-slate-200 transition">
+              + {{ issue.label }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Description du problème -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            3. Description détaillée des symptômes *
+          </label>
+          <textarea
+            formControlName="description_probleme"
+            rows="4"
+            placeholder="Décrivez ce qui se passe : Que faisiez-vous quand la panne est survenue ? Y a-t-il eu un bruit, une odeur, un liquide renversé ou une mise à jour ?"
+            class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white"></textarea>
+          <p *ngIf="demandeForm.get('description_probleme')?.invalid && demandeForm.get('description_probleme')?.touched" class="text-red-500 text-xs mt-1">
+            Veuillez fournir au moins 15 caractères pour une analyse IA précise.
+          </p>
+        </div>
+
+        <!-- Date de récupération souhaitée -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            4. Date limite ou de récupération souhaitée (Optionnel)
+          </label>
+          <input
+            type="date"
+            formControlName="date_recuperation"
+            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white"
+          />
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="isAnalyzing()"
+          class="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-bold text-sm rounded-2xl shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 transition duration-200 flex items-center justify-center gap-2 disabled:opacity-75">
+          <i *ngIf="!isAnalyzing()" class="bi bi-magic text-lg"></i>
+          <span *ngIf="!isAnalyzing()">Lancer l'Analyse IA & Trouver un Réparateur</span>
+          <span *ngIf="isAnalyzing()" class="flex items-center gap-2">
+            <svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Analyse IA en cours (Qwen / Ollama)...
+          </span>
+        </button>
+
+      </form>
+
+    </div>
+
+    <!-- AI Diagnostic Result Column -->
+    <div class="lg:col-span-5 space-y-4">
+      
+      <!-- Placeholder when not analyzed yet -->
+      <div *ngIf="!analysisResult() && !isAnalyzing()" class="bg-indigo-50/60 rounded-3xl p-6 border border-indigo-100 text-center space-y-3">
+        <div class="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mx-auto shadow-lg shadow-indigo-500/20">
+          <i class="bi bi-cpu text-3xl"></i>
+        </div>
+        <h3 class="text-base font-bold text-slate-900">Moteur Diagnostic IA Prêt</h3>
+        <p class="text-xs text-slate-600 leading-relaxed max-w-sm mx-auto">
+          Remplissez le formulaire et soumettez-le pour que notre modèle IA analyse la panne et classe votre demande dans la catégorie optimale.
+        </p>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isAnalyzing()" class="bg-white rounded-3xl p-8 border border-slate-200 card-shadow text-center space-y-4 animate-pulse">
+        <div class="w-14 h-14 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mx-auto">
+          <i class="bi bi-gear-wide-connected text-3xl animate-spin"></i>
+        </div>
+        <h3 class="text-base font-bold text-slate-900">Analyse de la panne en cours...</h3>
+        <p class="text-xs text-slate-500">
+          Traitement du langage naturel des symptômes et recherche des compétences adaptées.
+        </p>
+      </div>
+
+      <!-- AI Result Card & Matched Repairers -->
+      <div *ngIf="analysisResult()" class="bg-white rounded-3xl p-6 border-2 border-indigo-500/40 card-shadow space-y-5 animate-fade-in">
+        
+        <!-- Category Badge Banner -->
+        <div class="p-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-800 text-white flex items-center justify-between shadow-md">
+          <div>
+            <span class="text-[10px] uppercase font-bold tracking-widest text-indigo-200 block">Catégorie Identifiée</span>
+            <h4 class="text-base font-black mt-0.5">{{ analysisResult()?.categorie || 'Réparation matérielle' }}</h4>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white">
+            <i class="bi bi-check2-circle text-2xl"></i>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-600">
+          {{ analysisResult()?.message || 'Réparateurs certifiés disponibles dans votre secteur géographique :' }}
+        </p>
+
+        <!-- Repairers List -->
+        <div class="space-y-3">
+          <div *ngFor="let rep of analysisResult()?.reparateurs" class="p-4 rounded-2xl border border-slate-200 hover:border-indigo-500 transition-all bg-slate-50/50 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center shrink-0">
+                <i class="bi bi-tools"></i>
+              </div>
+              <div>
+                <h5 class="text-xs font-bold text-slate-900">{{ rep.nom }}</h5>
+                <p class="text-[11px] text-slate-500">{{ rep.ville }} • {{ rep.experience }} ans d’exp.</p>
+                <div class="flex items-center gap-1 text-amber-500 text-xs font-bold mt-0.5">
+                  <i class="bi bi-star-fill"></i>
+                  <span>{{ rep.note }} / 5</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              (click)="assigner(rep)"
+              class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition shrink-0">
+              Choisir
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

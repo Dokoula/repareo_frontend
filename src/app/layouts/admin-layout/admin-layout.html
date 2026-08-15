@@ -1,0 +1,146 @@
+<div class="min-h-screen flex flex-col bg-slate-950 text-slate-100">
+  
+  <!-- Top Admin Executive Header -->
+  <header class="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Left: Logo & Toggle -->
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            (click)="toggleMobileMenu()"
+            class="lg:hidden p-2 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white">
+            <i class="bi bi-list text-2xl"></i>
+          </button>
+
+          <a routerLink="/admin/dashboard" class="flex items-center gap-2.5 group">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-white font-black shadow-lg shadow-purple-500/20 group-hover:scale-105 transition">
+              <i class="bi bi-shield-lock-fill text-xl"></i>
+            </div>
+            <div>
+              <span class="text-lg font-black tracking-tight text-white flex items-center gap-1.5">
+                REPAREO <span class="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">SuperAdmin</span>
+              </span>
+            </div>
+          </a>
+        </div>
+
+        <!-- Center: Health Indicator -->
+        <div class="hidden md:flex items-center gap-3">
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-slate-300 font-medium">Système : <strong class="text-emerald-400">100% Opérationnel</strong></span>
+          </div>
+        </div>
+
+        <!-- Right: Admin User & Logout -->
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <button
+              type="button"
+              (click)="toggleUserMenu()"
+              class="flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-slate-800 transition">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 text-white flex items-center justify-center font-bold text-xs">
+                A
+              </div>
+              <div class="hidden sm:block text-left">
+                <p class="text-xs font-bold text-white">
+                  {{ authService.currentUser()?.username || 'Super Admin' }}
+                </p>
+                <p class="text-[10px] text-purple-400 font-semibold">
+                  Administration Centrale
+                </p>
+              </div>
+              <i class="bi bi-chevron-down text-xs text-slate-400"></i>
+            </button>
+
+            <!-- Dropdown -->
+            <div
+              *ngIf="isUserMenuOpen()"
+              class="absolute right-0 mt-2 w-52 bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 py-2 z-50 animate-fade-in">
+              <button
+                type="button"
+                (click)="logout()"
+                class="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-red-400 hover:bg-slate-800 font-semibold text-left">
+                <i class="bi bi-box-arrow-right text-base"></i>
+                <span>Déconnexion Admin</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <div class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    
+    <!-- Admin Sidebar -->
+    <aside class="hidden lg:block lg:col-span-3 sticky top-24 space-y-4">
+      <div class="bg-slate-900/90 rounded-2xl p-3 border border-slate-800 shadow-xl space-y-1">
+        <div class="px-3 py-2 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+          Supervision Plateforme
+        </div>
+        <a
+          *ngFor="let item of navItems"
+          [routerLink]="item.route"
+          routerLinkActive="bg-purple-600/20 text-purple-300 font-bold border-purple-500/40"
+          class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/80 transition border border-transparent">
+          <div class="flex items-center gap-3">
+            <i [class]="item.icon" class="text-base text-purple-400"></i>
+            <span>{{ item.label }}</span>
+          </div>
+          <span *ngIf="item.badge" class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500 text-white font-black">
+            {{ item.badge }}
+          </span>
+        </a>
+      </div>
+
+      <!-- Quick Platform Stats pill -->
+      <div class="p-4 rounded-2xl bg-gradient-to-br from-purple-950 to-slate-900 border border-purple-800/30 text-slate-200">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold text-slate-300">Base Utilisateurs</span>
+          <span class="text-xs font-black text-purple-300">148 comptes</span>
+        </div>
+        <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+          <div class="bg-gradient-to-r from-purple-500 to-indigo-400 h-full w-3/4"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="lg:col-span-9 w-full">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+
+  <!-- Mobile Drawer -->
+  <div *ngIf="isMobileMenuOpen()" class="fixed inset-0 z-50 lg:hidden flex">
+    <div (click)="closeMobileMenu()" class="fixed inset-0 bg-black/80 backdrop-blur-xs"></div>
+    <div class="relative w-72 bg-slate-900 h-full p-5 flex flex-col justify-between z-10 text-white">
+      <div>
+        <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+          <span class="font-black text-purple-400">ADMINISTRATION</span>
+          <button (click)="closeMobileMenu()" class="text-slate-400"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <nav class="space-y-1">
+          <a
+            *ngFor="let item of navItems"
+            [routerLink]="item.route"
+            (click)="closeMobileMenu()"
+            routerLinkActive="bg-purple-600/20 text-purple-300 font-bold"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-300 hover:bg-slate-800">
+            <i [class]="item.icon" class="text-purple-400"></i>
+            <span>{{ item.label }}</span>
+          </a>
+        </nav>
+      </div>
+      <button (click)="logout(); closeMobileMenu()" class="py-2.5 rounded-xl bg-red-900/30 text-red-400 text-xs font-bold">
+        Déconnexion
+      </button>
+    </div>
+  </div>
+
+</div>
