@@ -19,10 +19,13 @@ export class AdminLayout {
 
   navItems = [
     { label: 'Vue d’ensemble', route: '/admin/dashboard', icon: 'bi-grid-fill' },
-    { label: 'Validation Réparateurs', route: '/admin/reparateurs', icon: 'bi-shield-check', badge: '1 en attente' },
+    { label: 'Validation Réparateurs', route: '/admin/reparateurs', icon: 'bi-shield-check' },
     { label: 'Gestion Utilisateurs', route: '/admin/utilisateurs', icon: 'bi-people-fill' },
     { label: 'Supervision Demandes', route: '/admin/demandes', icon: 'bi-pc-display-horizontal' },
     { label: 'Statistiques & Rapports', route: '/admin/statistiques', icon: 'bi-bar-chart-fill' },
+    { label: 'Finances & Commissions', route: '/admin/finances', icon: 'bi-cash-stack' },
+    { label: 'Messagerie Réparateurs', route: '/admin/messages-reparateurs', icon: 'bi-chat-dots-fill' },
+    { label: 'Avis Clients', route: '/admin/avis', icon: 'bi-star-fill' },
   ];
 
   toggleMobileMenu(): void {

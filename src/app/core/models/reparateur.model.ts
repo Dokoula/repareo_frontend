@@ -25,7 +25,7 @@ export interface Reparateur {
   user: User;
   specialite: string;
   experience: number;
-  note_moyenne: number;
+  note_moyenne?: number;
   statut_validation: boolean;
   disponibilite: Disponibilite;
   categories?: CategorieCompetence[];

@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angu
 import { AvisService } from '../../../core/services/avis.service';
 import { Avis } from '../../../core/models/avis.model';
 import Swal from 'sweetalert2';
+import { PaiementService } from '../../../core/services/paiement.service';
 
 @Component({
   selector: 'app-client-avis',
@@ -14,10 +15,12 @@ import Swal from 'sweetalert2';
 export class ClientAvis implements OnInit {
   private fb = inject(FormBuilder);
   private avisService = inject(AvisService);
+  private paiementService = inject(PaiementService);
 
   avisList = signal<Avis[]>([]);
   selectedStars = signal<number>(5);
   isSubmitting = signal<boolean>(false);
+  reparationId = signal<number | null>(null);
 
   avisForm = this.fb.group({
     commentaire: ['', [Validators.required, Validators.minLength(10)]]
@@ -25,6 +28,11 @@ export class ClientAvis implements OnInit {
 
   ngOnInit(): void {
     this.avisService.getAvis().subscribe(list => this.avisList.set(list));
+    this.paiementService.getPaiements().subscribe((paiements) => {
+      const paiement = paiements[0];
+      if (!paiement) return;
+      this.reparationId.set(typeof paiement.reparation === 'number' ? paiement.reparation : paiement.reparation.id);
+    });
   }
 
   setStars(stars: number): void {
@@ -40,13 +48,18 @@ export class ClientAvis implements OnInit {
     this.isSubmitting.set(true);
     const commentaire = this.avisForm.value.commentaire!;
 
-    this.avisService.creerAvis(401, {
+    const reparationId = this.reparationId();
+    if (!reparationId) {
+      this.isSubmitting.set(false);
+      return;
+    }
+    this.avisService.creerAvis(reparationId, {
       note: this.selectedStars(),
       commentaire
     }).subscribe({
       next: (res) => {
         this.isSubmitting.set(false);
-        this.avisList.update(prev => [res.avis, ...prev]);
+        this.avisService.getAvis().subscribe((avis) => this.avisList.set(avis));
         this.avisForm.reset();
         Swal.fire({
           icon: 'success',
@@ -54,7 +67,8 @@ export class ClientAvis implements OnInit {
           text: 'Votre évaluation aide la communauté Repareo et valorise le travail du technicien.',
           confirmButtonColor: '#4F46E5'
         });
-      }
+      },
+      error: () => this.isSubmitting.set(false)
     });
   }
 }

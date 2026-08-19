@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth';
 import Swal from 'sweetalert2';
+import { ClientService } from '../../../core/services/client.service';
 
 @Component({
   selector: 'app-client-profil',
@@ -13,6 +14,7 @@ import Swal from 'sweetalert2';
 export class ClientProfil implements OnInit {
   private fb = inject(FormBuilder);
   authService = inject(AuthService);
+  private clientService = inject(ClientService);
 
   isSaving = signal<boolean>(false);
 
@@ -34,27 +36,43 @@ export class ClientProfil implements OnInit {
   });
 
   ngOnInit(): void {
-    const user = this.authService.currentUser();
-    if (user) {
+    this.clientService.getMonProfil().subscribe(profil => {
+      const user = profil.user;
       this.profilForm.patchValue({
         username: user.username,
         email: user.email,
         telephone: user.telephone,
-        ville: user.ville
+        ville: user.ville,
+        adresse: profil.adresse
       });
-    }
+    });
   }
 
   save(): void {
+    if (this.profilForm.invalid) {
+      this.profilForm.markAllAsTouched();
+      return;
+    }
     this.isSaving.set(true);
-    setTimeout(() => {
-      this.isSaving.set(false);
-      Swal.fire({
+    const valeur = this.profilForm.getRawValue();
+    this.clientService.updateMonProfil({
+      email: valeur.email || '', telephone: valeur.telephone || '',
+      ville: valeur.ville || '', adresse: valeur.adresse || ''
+    }).subscribe({
+      next: () => {
+        this.isSaving.set(false);
+        this.authService.getProfile().subscribe();
+        Swal.fire({
         icon: 'success',
         title: 'Profil mis à jour',
         text: 'Vos informations personnelles ont été enregistrées avec succès.',
         confirmButtonColor: '#4F46E5'
-      });
-    }, 600);
+        });
+      },
+      error: error => {
+        this.isSaving.set(false);
+        Swal.fire({ icon: 'error', title: 'Enregistrement impossible', text: error?.error?.message || 'Vérifiez les informations.', confirmButtonColor: '#DC2626' });
+      }
+    });
   }
 }

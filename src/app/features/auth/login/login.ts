@@ -1,23 +1,21 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth';
-import { RoleUtilisateur } from '../../../core/models/user.model';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
-  templateUrl: './login.html'
+  templateUrl: './login.html',
+  styleUrl: './login.css'
 })
 export class Login {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
-  private router = inject(Router);
 
-  selectedRole = signal<RoleUtilisateur>('CLIENT');
   showPassword = signal<boolean>(false);
   isLoading = signal<boolean>(false);
 
@@ -26,37 +24,6 @@ export class Login {
     password: ['', [Validators.required, Validators.minLength(4)]],
     rememberMe: [false]
   });
-
-  rolesList = [
-    {
-      id: 'CLIENT' as RoleUtilisateur,
-      label: 'Espace Client',
-      sublabel: 'Particulier & Entreprise',
-      icon: 'bi-person-badge',
-      color: 'from-blue-600 to-indigo-600',
-      badgeColor: 'bg-blue-100 text-blue-800'
-    },
-    {
-      id: 'REPARATEUR' as RoleUtilisateur,
-      label: 'Espace Réparateur',
-      sublabel: 'Technicien Certifié',
-      icon: 'bi-tools',
-      color: 'from-cyan-600 to-teal-600',
-      badgeColor: 'bg-teal-100 text-teal-800'
-    },
-    {
-      id: 'ADMINISTRATEUR' as RoleUtilisateur,
-      label: 'Espace Admin',
-      sublabel: 'Gestion Plateforme',
-      icon: 'bi-shield-lock',
-      color: 'from-purple-600 to-indigo-700',
-      badgeColor: 'bg-purple-100 text-purple-800'
-    }
-  ];
-
-  selectRole(role: RoleUtilisateur): void {
-    this.selectedRole.set(role);
-  }
 
   togglePasswordVisibility(): void {
     this.showPassword.update(val => !val);
@@ -73,7 +40,7 @@ export class Login {
 
     this.authService.login(
       { username: username!, password: password! },
-      this.selectedRole()
+      this.loginForm.value.rememberMe ?? false
     ).subscribe({
       next: (res) => {
         this.isLoading.set(false);
@@ -86,7 +53,7 @@ export class Login {
           toast: true,
           position: 'top-end'
         });
-        this.authService.redirectByRole(res.user?.role || this.selectedRole());
+        this.authService.redirectByRole(res.user.role);
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -102,15 +69,4 @@ export class Login {
     });
   }
 
-  getRoleLabel(role: RoleUtilisateur): string {
-    switch (role) {
-      case 'ADMINISTRATEUR':
-      case 'ADMIN':
-        return 'Espace Administrateur';
-      case 'REPARATEUR':
-        return 'Espace Réparateur';
-      default:
-        return 'Espace Client';
-    }
-  }
 }

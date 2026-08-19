@@ -6,17 +6,39 @@
     </span>
     <h1 class="text-2xl font-black text-white">Profil Professionnel Technicien</h1>
     <p class="text-xs sm:text-sm text-slate-400 mt-1">
-      Configurez vos spécialités informatiques pour recevoir les demandes pertinentes générées par l'IA.
+      Configurez vos spécialités informatiques pour recevoir les demandes pertinentes.
     </p>
+  </div>
+
+  <div *ngIf="dossierIncomplet()" class="max-w-3xl p-5 rounded-2xl bg-red-50 border-2 border-red-300 text-red-900 shadow-sm">
+    <div class="flex items-start gap-3">
+      <i class="bi bi-exclamation-triangle-fill text-2xl text-red-600"></i>
+      <div>
+        <h2 class="text-base font-black text-red-800">Dossier incomplet</h2>
+        <p class="text-sm mt-1">Votre compte a été accepté, mais certaines pièces obligatoires manquent encore.</p>
+        <p class="text-sm font-bold mt-3">Documents manquants :</p>
+        <ul class="mt-1 list-disc list-inside text-sm">
+          <li *ngFor="let piece of piecesManquantes()">{{ piece }}</li>
+        </ul>
+      </div>
+    </div>
   </div>
 
   <div class="bg-slate-800/90 rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-xl max-w-3xl space-y-6">
     
-    <div class="flex items-center gap-3 p-4 rounded-2xl bg-teal-950/40 border border-teal-800/40">
+    <div *ngIf="profil()?.statut_validation" class="flex items-center gap-3 p-4 rounded-2xl bg-teal-950/40 border border-teal-800/40">
       <i class="bi bi-patch-check-fill text-2xl text-teal-400"></i>
       <div>
         <h4 class="text-xs font-bold text-white">Statut : Réparateur Agréé Repareo</h4>
         <p class="text-[11px] text-teal-300">Votre compte a été vérifié et certifié par l'administration.</p>
+      </div>
+    </div>
+
+    <div *ngIf="profil() && !profil()!.statut_validation" class="flex items-center gap-3 p-4 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900">
+      <i class="bi bi-clock-history text-2xl text-amber-600"></i>
+      <div>
+        <h4 class="text-xs font-bold">Compte en attente de validation</h4>
+        <p class="text-[11px]">L’administration doit encore examiner votre dossier.</p>
       </div>
     </div>
 
@@ -100,6 +122,28 @@
       </div>
 
     </form>
+  </div>
+
+  <div class="bg-slate-800/90 rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-xl max-w-3xl">
+    <h2 class="text-lg font-black text-white">Compléter mon dossier</h2>
+    <p class="mt-1 text-xs text-slate-400">Ajoutez ou remplacez vos pièces. Formats acceptés : image, PDF ou Word, 5 Mo maximum.</p>
+    <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <label class="rounded-xl border border-slate-600 p-4 text-xs text-slate-200">Carte d'identité
+        <input type="file" (change)="choisirFichier('carte_identite', $event)" class="mt-2 block w-full text-[11px]">
+      </label>
+      <label class="rounded-xl border border-slate-600 p-4 text-xs text-slate-200">Diplôme ou certification
+        <input type="file" (change)="choisirFichier('diplome_certification', $event)" class="mt-2 block w-full text-[11px]">
+      </label>
+      <label class="rounded-xl border border-slate-600 p-4 text-xs text-slate-200">Curriculum vitæ
+        <input type="file" (change)="choisirFichier('cv', $event)" class="mt-2 block w-full text-[11px]">
+      </label>
+      <label class="rounded-xl border border-slate-600 p-4 text-xs text-slate-200">Autre document
+        <input type="file" (change)="choisirFichier('autre_document', $event)" class="mt-2 block w-full text-[11px]">
+      </label>
+    </div>
+    <button type="button" (click)="envoyerDocuments()" [disabled]="isUploading()" class="mt-5 rounded-xl bg-teal-500 px-6 py-3 text-xs font-black text-slate-950 disabled:opacity-50">
+      {{ isUploading() ? 'Envoi...' : 'Enregistrer les documents sélectionnés' }}
+    </button>
   </div>
 
 </div>

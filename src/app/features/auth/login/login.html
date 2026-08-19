@@ -1,250 +1,72 @@
-<div class="min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 relative overflow-hidden">
-  
-  <!-- Ambient background glow effects -->
-  <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none animate-pulse-glow"></div>
-  <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none animate-pulse-glow" style="animation-delay: 1.5s;"></div>
+<main class="auth-page">
+  <section class="auth-card" aria-labelledby="login-title">
+    <header class="auth-header">
+      <a routerLink="/login" class="brand" aria-label="Repareo">
+        <span class="brand-mark"><i class="bi bi-tools"></i></span>
+        <span>Repareo</span>
+      </a>
+      <h1 id="login-title">Connexion</h1>
+      <p>Accédez simplement à votre espace.</p>
+    </header>
 
-  <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
-    
-    <!-- Left Hero Branding Column (Visible on Desktop / Tablet) -->
-    <div class="hidden lg:flex lg:col-span-5 flex-col justify-between p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl text-white shadow-2xl">
-      <div>
-        <!-- Logo & Badge -->
-        <div class="flex items-center gap-3 mb-8">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-            <i class="bi bi-cpu text-2xl text-white"></i>
-          </div>
-          <div>
-            <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-1.5">
-              REPAREO <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/30 text-indigo-300 font-semibold border border-indigo-500/40">IA</span>
-            </h1>
-            <p class="text-xs text-slate-400 font-medium">Diagnostic & Réparation Informatique</p>
-          </div>
-        </div>
-
-        <h2 class="text-3xl font-extrabold leading-tight mb-4">
-          La plateforme intelligente pour réparer vos équipements.
-        </h2>
-        <p class="text-slate-300 text-sm leading-relaxed mb-8">
-          Diagnostic instantané par IA, mise en relation avec des réparateurs certifiés, devis transparents et suivi en temps réel.
-        </p>
-
-        <!-- Feature Points -->
-        <div class="space-y-4">
-          <div class="flex items-start gap-3.5">
-            <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0 mt-0.5 border border-indigo-500/30">
-              <i class="bi bi-robot text-lg"></i>
-            </div>
-            <div>
-              <h4 class="text-sm font-bold text-white">Analyse Intelligente par IA</h4>
-              <p class="text-xs text-slate-400">Identification automatique du problème et estimation de panne.</p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3.5">
-            <div class="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0 mt-0.5 border border-cyan-500/30">
-              <i class="bi bi-shield-check text-lg"></i>
-            </div>
-            <div>
-              <h4 class="text-sm font-bold text-white">Techniciens Certifiés</h4>
-              <p class="text-xs text-slate-400">Des experts validés pour garantir un service de haute précision.</p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3.5">
-            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-500/30">
-              <i class="bi bi-credit-card-2-front text-lg"></i>
-            </div>
-            <div>
-              <h4 class="text-sm font-bold text-white">Devis & Paiement Sécurisé</h4>
-              <p class="text-xs text-slate-400">Validation claire des devis et règlement en toute sérénité.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Platform Info Footer -->
-      <div class="mt-8 pt-6 border-t border-white/10">
-        <p class="text-xs font-semibold text-slate-400 mb-3 flex items-center gap-1.5">
-          <i class="bi bi-info-circle-fill text-indigo-400"></i> Première visite ?
-        </p>
-        <a routerLink="/register" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition">
-          <i class="bi bi-person-plus-fill"></i>
-          <span>Créer un compte Client ou Réparateur</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- Right Login Form Column -->
-    <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-10 shadow-2xl border border-slate-100 relative">
-      
-      <!-- Mobile Logo Header (Visible on Mobile) -->
-      <div class="flex lg:hidden items-center justify-between mb-6 pb-4 border-b border-slate-100">
-        <div class="flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-md">
-            <i class="bi bi-cpu text-xl"></i>
-          </div>
-          <div>
-            <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">REPAREO</h1>
-            <p class="text-[10px] text-slate-500 font-medium">Diagnostic & Réparation</p>
-          </div>
-        </div>
-        <span class="text-xs px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 font-bold border border-indigo-100">v2.0</span>
-      </div>
-
-      <div class="mb-6">
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          Connexion à votre espace
-        </h2>
-        <p class="text-slate-500 text-sm mt-1">
-          Sélectionnez votre profil pour accéder à votre interface dédiée.
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+      <div class="field-group">
+        <label for="username">Nom d’utilisateur</label>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          autocomplete="username"
+          placeholder="Votre identifiant"
+          [class.invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+          aria-describedby="username-error"
+        />
+        <p id="username-error" class="field-error" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+          Le nom d’utilisateur est obligatoire.
         </p>
       </div>
 
-      <!-- Step 1: Role Selector Tabs (Requested explicitly by user) -->
-      <div class="mb-6">
-        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-          1. Qui êtes-vous ?
-        </label>
-        <div class="grid grid-cols-3 gap-2 p-1.5 bg-slate-100 rounded-2xl border border-slate-200">
+      <div class="field-group">
+        <label for="password">Mot de passe</label>
+        <div class="password-field" [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          <input
+            id="password"
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="current-password"
+            placeholder="Votre mot de passe"
+            aria-describedby="password-error"
+          />
           <button
-            *ngFor="let role of rolesList"
             type="button"
-            (click)="selectRole(role.id)"
-            [class.bg-white]="selectedRole() === role.id"
-            [class.shadow-md]="selectedRole() === role.id"
-            [class.text-indigo-600]="selectedRole() === role.id"
-            [class.text-slate-600]="selectedRole() !== role.id"
-            class="flex flex-col items-center justify-center py-3 px-2 rounded-xl transition-all duration-200 text-center font-medium relative hover:text-indigo-600">
-            
-            <i [class]="role.icon" class="text-lg mb-1"></i>
-            <span class="text-xs sm:text-sm font-bold truncate max-w-full">
-              {{ role.id === 'ADMINISTRATEUR' ? 'Admin' : (role.id === 'REPARATEUR' ? 'Réparateur' : 'Client') }}
-            </span>
-
-            <span *ngIf="selectedRole() === role.id" class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-indigo-600 ring-2 ring-white"></span>
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'">
+            <i [class]="showPassword() ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
           </button>
         </div>
-
-        <!-- Role description hint -->
-        <div class="mt-2.5 flex items-center gap-2 text-xs text-slate-500 px-1">
-          <i class="bi bi-info-circle text-indigo-500"></i>
-          <span *ngIf="selectedRole() === 'CLIENT'">
-            Vous serez redirigé vers l’<strong>Espace Client</strong> (demandes, devis, suivi et paiement).
-          </span>
-          <span *ngIf="selectedRole() === 'REPARATEUR'">
-            Vous serez redirigé vers l’<strong>Espace Réparateur</strong> (atelier, diagnostics et interventions).
-          </span>
-          <span *ngIf="selectedRole() === 'ADMINISTRATEUR'">
-            Vous serez redirigé vers l’<strong>Espace Admin</strong> (statistiques, modération et gestion globale).
-          </span>
-        </div>
-      </div>
-
-      <!-- Step 2: Login Credentials Form -->
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
-        
-        <!-- Username or Email -->
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-            Identifiant / Nom d’utilisateur ou Email
-          </label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-              <i class="bi bi-person text-lg"></i>
-            </div>
-            <input
-              type="text"
-              formControlName="username"
-              placeholder="ex: marie_client ou koffi_tech"
-              class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
-              [class.border-red-400]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
-            />
-          </div>
-          <p *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" class="text-red-500 text-xs mt-1">
-            L'identifiant est obligatoire.
-          </p>
-        </div>
-
-        <!-- Password -->
-        <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">
-              Mot de passe
-            </label>
-            <a href="javascript:void(0)" class="text-xs text-indigo-600 hover:text-indigo-700 font-semibold">
-              Mot de passe oublié ?
-            </a>
-          </div>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-              <i class="bi bi-lock text-lg"></i>
-            </div>
-            <input
-              [type]="showPassword() ? 'text' : 'password'"
-              formControlName="password"
-              placeholder="••••••••"
-              class="w-full pl-10 pr-11 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
-              [class.border-red-400]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-            />
-            <button
-              type="button"
-              (click)="togglePasswordVisibility()"
-              class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
-              <i [class]="showPassword() ? 'bi-eye-slash' : 'bi-eye'" class="text-lg"></i>
-            </button>
-          </div>
-          <p *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="text-red-500 text-xs mt-1">
-            Le mot de passe doit contenir au moins 4 caractères.
-          </p>
-        </div>
-
-        <!-- Remember Me Checkbox -->
-        <div class="flex items-center justify-between pt-1">
-          <label class="flex items-center gap-2 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              formControlName="rememberMe"
-              class="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer"
-            />
-            <span class="text-xs text-slate-600 font-medium">Se souvenir de moi</span>
-          </label>
-        </div>
-
-        <!-- Submit Button -->
-        <button
-          type="submit"
-          [disabled]="isLoading()"
-          class="w-full py-3.5 px-4 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
-          <i *ngIf="!isLoading()" class="bi bi-box-arrow-in-right text-lg"></i>
-          <span *ngIf="!isLoading()">Se connecter à l'espace {{ selectedRole() === 'ADMINISTRATEUR' ? 'Admin' : (selectedRole() === 'REPARATEUR' ? 'Réparateur' : 'Client') }}</span>
-          <span *ngIf="isLoading()" class="flex items-center gap-2">
-            <svg class="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Connexion en cours...
-          </span>
-        </button>
-      </form>
-
-
-
-      <!-- Register Prompt Footer (Requested explicitly by user) -->
-      <div class="mt-8 pt-6 border-t border-slate-100 text-center">
-        <p class="text-sm text-slate-600">
-          Vous n'avez pas encore de compte ?
+        <p id="password-error" class="field-error" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          Le mot de passe doit contenir au moins 4 caractères.
         </p>
-        <a
-          routerLink="/register"
-          class="inline-flex items-center gap-2 mt-2 px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-sm transition">
-          <i class="bi bi-person-plus text-indigo-600"></i>
-          <span>Créer un compte (Client ou Réparateur)</span>
-        </a>
       </div>
 
-    </div>
+      <label class="remember-control">
+        <input type="checkbox" formControlName="rememberMe" />
+        <span>Rester connecté</span>
+      </label>
 
-  </div>
+      <button type="submit" class="primary-button" [disabled]="isLoading()">
+        <span *ngIf="!isLoading()">Se connecter</span>
+        <span *ngIf="isLoading()" class="loading-label">
+          <span class="spinner" aria-hidden="true"></span>
+          Connexion en cours
+        </span>
+      </button>
+    </form>
 
-</div>
+    <footer class="auth-footer">
+      <span>Vous n’avez pas de compte ?</span>
+      <a routerLink="/register">Créer un compte</a>
+    </footer>
+  </section>
+</main>

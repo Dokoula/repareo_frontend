@@ -22,14 +22,19 @@ import { ReparateurDemandes } from './features/reparateur/demandes/demandes';
 import { ReparateurAtelier } from './features/reparateur/atelier/atelier';
 import { ReparateurReparations } from './features/reparateur/reparations/reparations';
 import { ReparateurMessagerie } from './features/reparateur/messagerie/messagerie';
-import { ReparateurAvis } from './features/reparateur/avis/avis';
 import { ReparateurProfil } from './features/reparateur/profil/profil';
+import { ReparateurValidation } from './features/reparateur/validation/validation';
 
 import { AdminDashboard } from './features/admin/dashboard/dashboard';
 import { AdminReparateurs } from './features/admin/reparateurs/reparateurs';
 import { AdminUtilisateurs } from './features/admin/utilisateurs/utilisateurs';
 import { AdminDemandes } from './features/admin/demandes/demandes';
 import { AdminStatistiques } from './features/admin/statistiques/statistiques';
+import { Portefeuille } from './features/shared/portefeuille/portefeuille';
+import { MessagerieAdministration } from './features/shared/messagerie-administration/messagerie-administration';
+import { AdminAvis } from './features/admin/avis/avis';
+import { authGuard } from './core/guards/auth-guard';
+import { roleGuard } from './core/guards/role-guard';
 
 export const routes: Routes = [
   {
@@ -38,7 +43,6 @@ export const routes: Routes = [
     pathMatch: 'full'
   },
 
-  // Auth Routes
   {
     path: '',
     component: AuthLayout,
@@ -54,10 +58,11 @@ export const routes: Routes = [
     ]
   },
 
-  // Client Dedicated Interface
   {
     path: 'client',
     component: ClientLayout,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['CLIENT'] },
     children: [
       {
         path: '',
@@ -99,10 +104,11 @@ export const routes: Routes = [
     ]
   },
 
-  // Réparateur Dedicated Interface
   {
     path: 'reparateur',
     component: ReparateurLayout,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['REPARATEUR'] },
     children: [
       {
         path: '',
@@ -130,20 +136,29 @@ export const routes: Routes = [
         component: ReparateurMessagerie
       },
       {
-        path: 'avis',
-        component: ReparateurAvis
-      },
-      {
         path: 'profil',
         component: ReparateurProfil
+      },
+      {
+        path: 'portefeuille',
+        component: Portefeuille
+      },
+      {
+        path: 'administration',
+        component: MessagerieAdministration
+      },
+      {
+        path: 'validation',
+        component: ReparateurValidation
       }
     ]
   },
 
-  // Admin Dedicated Interface
   {
     path: 'admin',
     component: AdminLayout,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMINISTRATEUR', 'ADMIN'] },
     children: [
       {
         path: '',
@@ -169,11 +184,22 @@ export const routes: Routes = [
       {
         path: 'statistiques',
         component: AdminStatistiques
+      },
+      {
+        path: 'finances',
+        component: Portefeuille
+      },
+      {
+        path: 'messages-reparateurs',
+        component: MessagerieAdministration
+      },
+      {
+        path: 'avis',
+        component: AdminAvis
       }
     ]
   },
 
-  // Fallback Wildcard
   {
     path: '**',
     redirectTo: 'login'

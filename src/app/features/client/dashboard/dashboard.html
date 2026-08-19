@@ -1,6 +1,6 @@
 <div class="space-y-6 animate-fade-in pb-12">
   
-  <!-- Welcome Hero Banner -->
+  
   <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-cyan-600 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
     <div class="absolute -right-8 -bottom-8 w-56 h-56 bg-white/10 rounded-full blur-2xl"></div>
     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -12,7 +12,7 @@
           Bonjour, {{ authService.currentUser()?.username || 'Client' }} 👋
         </h1>
         <p class="text-indigo-100 text-sm mt-1 max-w-xl">
-          Suivez vos réparations en direct ou déposez une nouvelle demande avec diagnostic IA instantané.
+          Suivez vos réparations en direct ou déposez une nouvelle demande rapidement.
         </p>
       </div>
 
@@ -27,7 +27,7 @@
     </div>
   </div>
 
-  <!-- KPI Metrics Grid -->
+  
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
     
     <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow card-hover">
@@ -48,7 +48,7 @@
           <i class="bi bi-gear-wide-connected text-lg"></i>
         </div>
       </div>
-      <p class="text-2xl font-black text-indigo-600">2</p>
+      <p class="text-2xl font-black text-indigo-600">{{ demandesEnCours() }}</p>
       <span class="text-[11px] text-indigo-600 font-medium">En atelier technique</span>
     </div>
 
@@ -59,7 +59,7 @@
           <i class="bi bi-file-earmark-text text-lg"></i>
         </div>
       </div>
-      <p class="text-2xl font-black text-amber-600">1</p>
+      <p class="text-2xl font-black text-amber-600">{{ devisAValider() }}</p>
       <span class="text-[11px] text-amber-600 font-medium">Action requise</span>
     </div>
 
@@ -70,13 +70,13 @@
           <i class="bi bi-check-circle-fill text-lg"></i>
         </div>
       </div>
-      <p class="text-2xl font-black text-emerald-600">1</p>
+      <p class="text-2xl font-black text-emerald-600">{{ demandesTerminees() }}</p>
       <span class="text-[11px] text-emerald-600 font-medium">Prêtes & Récupérées</span>
     </div>
 
   </div>
 
-  <!-- Interactive Live Repair Tracker (Stepper) -->
+  
   <div *ngIf="activeDemande()" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 card-shadow space-y-6">
     
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
@@ -95,18 +95,18 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <a routerLink="/client/messages" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition">
+        <a *ngIf="peutContacterReparateur(activeDemande()!)" routerLink="/client/messages" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition">
           <i class="bi bi-chat-dots-fill text-indigo-600"></i>
           <span>Contacter réparateur</span>
         </a>
-        <a routerLink="/client/devis" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-sm">
+        <a *ngIf="peutVoirDevis(activeDemande()!)" routerLink="/client/devis" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-sm">
           <i class="bi bi-file-earmark-check"></i>
           <span>Voir devis</span>
         </a>
       </div>
     </div>
 
-    <!-- Stepper Pipeline (1 to 6 steps) -->
+    
     <div>
       <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-6">
         Progression du cycle d'intervention :
@@ -114,7 +114,7 @@
 
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         
-        <!-- Step 1 -->
+        
         <div class="p-3 rounded-2xl border text-center transition"
           [ngClass]="getStepNumber(activeDemande()!.statut) >= 1 ? 'bg-indigo-50/60 border-indigo-200 text-indigo-900' : 'bg-slate-50 border-slate-200 text-slate-400'">
           <div class="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-xs"
@@ -123,10 +123,10 @@
             <span *ngIf="getStepNumber(activeDemande()!.statut) <= 1">1</span>
           </div>
           <p class="text-xs font-bold">Demande envoyée</p>
-          <span class="text-[10px] opacity-80 block mt-0.5">Analyse IA</span>
+          <span class="text-[10px] opacity-80 block mt-0.5">Mise en relation</span>
         </div>
 
-        <!-- Step 2 -->
+        
         <div class="p-3 rounded-2xl border text-center transition"
           [ngClass]="getStepNumber(activeDemande()!.statut) >= 2 ? 'bg-indigo-50/60 border-indigo-200 text-indigo-900' : 'bg-slate-50 border-slate-200 text-slate-400'">
           <div class="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-xs"
@@ -138,7 +138,7 @@
           <span class="text-[10px] opacity-80 block mt-0.5">Examen technique</span>
         </div>
 
-        <!-- Step 3 -->
+        
         <div class="p-3 rounded-2xl border text-center transition"
           [ngClass]="getStepNumber(activeDemande()!.statut) >= 3 ? 'bg-indigo-50/60 border-indigo-200 text-indigo-900' : 'bg-slate-50 border-slate-200 text-slate-400'">
           <div class="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-xs"
@@ -150,7 +150,7 @@
           <span class="text-[10px] opacity-80 block mt-0.5">Validation client</span>
         </div>
 
-        <!-- Step 4 -->
+        
         <div class="p-3 rounded-2xl border text-center transition"
           [ngClass]="getStepNumber(activeDemande()!.statut) >= 4 ? 'bg-indigo-50/60 border-indigo-200 text-indigo-900' : 'bg-slate-50 border-slate-200 text-slate-400'">
           <div class="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-xs"
@@ -162,7 +162,7 @@
           <span class="text-[10px] opacity-80 block mt-0.5">En atelier</span>
         </div>
 
-        <!-- Step 5 -->
+        
         <div class="p-3 rounded-2xl border text-center transition"
           [ngClass]="getStepNumber(activeDemande()!.statut) >= 5 ? 'bg-indigo-50/60 border-indigo-200 text-indigo-900' : 'bg-slate-50 border-slate-200 text-slate-400'">
           <div class="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-xs"
@@ -174,7 +174,7 @@
           <span class="text-[10px] opacity-80 block mt-0.5">Règlement</span>
         </div>
 
-        <!-- Step 6 -->
+        
         <div class="p-3 rounded-2xl border text-center transition"
           [ngClass]="getStepNumber(activeDemande()!.statut) >= 6 ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-400'">
           <div class="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-xs"
@@ -191,7 +191,7 @@
 
   </div>
 
-  <!-- Recent Demands Table / List -->
+  
   <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 card-shadow space-y-4">
     <div class="flex items-center justify-between pb-4 border-b border-slate-100">
       <div>
@@ -205,7 +205,10 @@
     </div>
 
     <div class="divide-y divide-slate-100">
-      <div *ngFor="let demande of demandes()" class="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/80 p-3 rounded-2xl transition">
+      <div *ngFor="let demande of demandes()"
+        [class.bg-indigo-50]="activeDemande()?.id === demande.id"
+        [class.border-indigo-200]="activeDemande()?.id === demande.id"
+        class="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/80 p-3 rounded-2xl border border-transparent transition">
         <div class="flex items-start gap-3.5">
           <div class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5 font-bold">
             <i class="bi bi-laptop text-xl"></i>
@@ -228,10 +231,15 @@
         </div>
 
         <div class="flex items-center gap-2 self-end sm:self-center">
-          <a routerLink="/client/devis" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition">
-            Détails
-          </a>
+          <button type="button" (click)="selectDemande(demande)" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition">
+            {{ activeDemande()?.id === demande.id ? 'Suivi affiché' : 'Suivre' }}
+          </button>
         </div>
+      </div>
+      <div *ngIf="demandes().length === 0" class="py-10 text-center">
+        <i class="bi bi-inbox text-3xl text-slate-300"></i>
+        <p class="mt-3 text-sm font-semibold text-slate-700">Aucune demande pour le moment</p>
+        <p class="mt-1 text-xs text-slate-500">Votre première demande apparaîtra ici après sa création.</p>
       </div>
     </div>
   </div>

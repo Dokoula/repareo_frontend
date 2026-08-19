@@ -1,0 +1,39 @@
+<div class="space-y-6 pb-12 animate-fade-in">
+  <section class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8">
+    <span class="rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-bold uppercase text-indigo-700">Canal privé</span>
+    <h1 class="mt-3 text-2xl font-black text-slate-900">Messagerie Administration – Réparateurs</h1>
+    <p class="mt-1 text-sm text-slate-500">Échanges confidentiels concernant les dossiers, validations et activités de l’atelier.</p>
+  </section>
+
+  <div class="grid grid-cols-1 gap-5 lg:grid-cols-12">
+    <aside class="rounded-3xl border border-slate-200 bg-white p-4 lg:col-span-4">
+      <select *ngIf="estAdmin" #repSelect (change)="ouvrirPour(+repSelect.value)" class="mb-4 w-full rounded-xl border border-slate-300 px-3 py-3 text-sm text-slate-900">
+        <option value="0">Choisir un réparateur</option>
+        <option *ngFor="let rep of reparateurs()" [value]="rep.id">{{ rep.user.username }} — {{ rep.user.ville }}</option>
+      </select>
+      <button *ngFor="let item of conversations()" (click)="selectionner(item)" [class.bg-indigo-50]="conversation()?.id === item.id" class="mb-2 w-full rounded-xl border border-slate-200 p-3 text-left">
+        <p class="text-sm font-bold text-slate-900">{{ item.reparateur.user.username }}</p>
+        <p class="text-xs text-slate-500">{{ item.reparateur.user.ville }}</p>
+      </button>
+      <p *ngIf="!conversations().length" class="py-8 text-center text-xs text-slate-500">Aucune conversation.</p>
+    </aside>
+
+    <section class="flex h-[560px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white lg:col-span-8">
+      <div class="border-b border-slate-200 p-4">
+        <p class="font-bold text-slate-900">{{ conversation()?.reparateur?.user?.username || 'Sélectionnez une conversation' }}</p>
+      </div>
+      <div class="flex-1 space-y-3 overflow-y-auto bg-slate-50 p-5">
+        <div *ngFor="let message of messages()" [class.justify-end]="message.expediteur.id === auth.currentUser()?.id" class="flex">
+          <div [class.bg-indigo-600]="message.expediteur.id === auth.currentUser()?.id" [class.text-white]="message.expediteur.id === auth.currentUser()?.id" class="max-w-md rounded-2xl border border-slate-200 bg-white p-3 text-sm text-slate-800">
+            <p>{{ message.contenu }}</p>
+            <p class="mt-1 text-[10px] opacity-70">{{ message.date_envoi | date:'short' }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3 border-t border-slate-200 p-4">
+        <input [(ngModel)]="nouveauMessage" (keyup.enter)="envoyer()" [disabled]="!conversation()" class="flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900" placeholder="Écrire un message privé...">
+        <button (click)="envoyer()" [disabled]="!conversation()" class="rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">Envoyer</button>
+      </div>
+    </section>
+  </div>
+</div>

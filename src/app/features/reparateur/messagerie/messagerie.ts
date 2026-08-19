@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MessagerieService } from '../../../core/services/messagerie.service';
 import { AuthService } from '../../../core/services/auth';
 import { Message } from '../../../core/models/message.model';
+import { Conversation } from '../../../core/models/conversation.model';
 
 @Component({
   selector: 'app-reparateur-messagerie',
@@ -16,11 +17,17 @@ export class ReparateurMessagerie implements OnInit {
   authService = inject(AuthService);
 
   messages = signal<Message[]>([]);
+  conversation = signal<Conversation | null>(null);
   nouveauMessage = signal<string>('');
 
   ngOnInit(): void {
-    this.messagerieService.getConversation(601).subscribe(c => {
-      this.messages.set(c.messages || []);
+    this.messagerieService.getConversations().subscribe((conversations) => {
+      const first = conversations[0];
+      if (!first) return;
+      this.messagerieService.getConversation(first.id).subscribe((conversation) => {
+        this.conversation.set(conversation);
+        this.messages.set(conversation.messages || []);
+      });
     });
   }
 
@@ -28,7 +35,9 @@ export class ReparateurMessagerie implements OnInit {
     const text = this.nouveauMessage().trim();
     if (!text) return;
 
-    this.messagerieService.envoyerMessage(601, text).subscribe(res => {
+    const conversationId = this.conversation()?.id;
+    if (!conversationId) return;
+    this.messagerieService.envoyerMessage(conversationId, text).subscribe(res => {
       this.messages.update(prev => [...prev, res.data]);
       this.nouveauMessage.set('');
     });

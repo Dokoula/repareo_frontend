@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { DemandeService } from '../../../core/services/demande.service';
-import { IAAnalysisResult, IAReparateurSuggestion } from '../../../core/models/demande.model';
+import { MiseEnRelationResult, ReparateurSuggestion } from '../../../core/models/demande.model';
 import Swal from 'sweetalert2';
+import { AuthService } from '../../../core/services/auth';
 
 @Component({
   selector: 'app-nouvelle-demande',
@@ -16,11 +17,12 @@ export class NouvelleDemande {
   private fb = inject(FormBuilder);
   private demandeService = inject(DemandeService);
   private router = inject(Router);
+  private authService = inject(AuthService);
 
-  isAnalyzing = signal<boolean>(false);
-  analysisResult = signal<IAAnalysisResult | null>(null);
+  isSubmitting = signal<boolean>(false);
+  matchingResult = signal<MiseEnRelationResult | null>(null);
   createdDemandeId = signal<number | null>(null);
-  selectedReparateur = signal<IAReparateurSuggestion | null>(null);
+  selectedReparateur = signal<ReparateurSuggestion | null>(null);
 
   marquesList = [
     'Apple (MacBook, iMac)',
@@ -61,8 +63,17 @@ export class NouvelleDemande {
       return;
     }
 
-    this.isAnalyzing.set(true);
-    this.analysisResult.set(null);
+    this.isSubmitting.set(true);
+    this.matchingResult.set(null);
+
+    const nom = this.authService.currentUser()?.username || 'client';
+    Swal.fire({
+      title: `Bonjour ${nom}`,
+      text: "L’agent IA analyse votre panne et recherche les réparateurs disponibles dans votre zone.",
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading()
+    });
 
     const val = this.demandeForm.value;
     const payload = {
@@ -74,31 +85,41 @@ export class NouvelleDemande {
 
     this.demandeService.creerDemande(payload).subscribe({
       next: (res) => {
-        this.isAnalyzing.set(false);
-        this.analysisResult.set(res);
-        this.createdDemandeId.set(103);
+        this.isSubmitting.set(false);
+        this.matchingResult.set(res);
+        this.createdDemandeId.set(res.demande_id);
+        Swal.close();
+        const nombre = res.reparateurs.length;
+        const moteur = res.analyse_par === 'OLLAMA'
+          ? 'Analyse réalisée par l’agent IA Ollama.'
+          : 'Ollama est indisponible : une analyse locale simplifiée a été utilisée.';
         Swal.fire({
-          icon: 'success',
-          title: 'Diagnostic IA effectué !',
-          text: `Panne identifiée : ${res.categorie || 'Analyse terminée'}. Choisissez un réparateur pour confirmer.`,
+          icon: nombre ? 'success' : 'info',
+          title: nombre ? `${nombre} réparateur${nombre > 1 ? 's' : ''} trouvé${nombre > 1 ? 's' : ''}` : 'Aucun réparateur disponible',
+          text: `${moteur} Catégorie : ${res.categorie || 'Non précisée'}. ${nombre ? 'Veuillez faire votre choix.' : 'Vous pourrez relancer la recherche plus tard.'}`,
           confirmButtonColor: '#4F46E5'
         });
       },
       error: () => {
-        this.isAnalyzing.set(false);
+        this.isSubmitting.set(false);
+        Swal.close();
         Swal.fire({
           icon: 'error',
           title: 'Erreur',
-          text: 'Une erreur est survenue lors de l’analyse.',
+          text: 'Votre demande n’a pas pu être enregistrée.',
           confirmButtonColor: '#4F46E5'
         });
       }
     });
   }
 
-  assigner(reparateur: IAReparateurSuggestion): void {
+  assigner(reparateur: ReparateurSuggestion): void {
     this.selectedReparateur.set(reparateur);
-    const demandeId = this.createdDemandeId() || 103;
+    const demandeId = this.createdDemandeId();
+    if (!demandeId) {
+      Swal.fire({ icon: 'error', title: 'Demande introuvable', text: 'Veuillez soumettre la demande à nouveau.' });
+      return;
+    }
 
     Swal.fire({
       title: 'Confirmer l’assignation ?',

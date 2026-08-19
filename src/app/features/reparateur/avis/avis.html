@@ -12,8 +12,8 @@
     </div>
 
     <div class="p-4 rounded-2xl bg-slate-900 border border-slate-700 text-center">
-      <span class="text-2xl font-black text-amber-400">4.8 / 5</span>
-      <p class="text-[10px] text-slate-400 mt-0.5">Taux de satisfaction client : 98%</p>
+      <span class="text-2xl font-black text-amber-400">{{ noteMoyenne() | number:'1.1-1' }} / 5</span>
+      <p class="text-[10px] text-slate-400 mt-0.5">{{ avisList().length }} avis · Satisfaction {{ satisfaction() }}%</p>
     </div>
   </div>
 
@@ -32,6 +32,10 @@
         {{ a.commentaire }}
       </p>
       <span class="text-[10px] text-slate-500 block text-right">{{ a.date_avis | date:'mediumDate' }}</span>
+    </div>
+    <div *ngIf="avisList().length === 0" class="bg-white rounded-2xl p-10 border border-slate-200 text-center">
+      <i class="bi bi-star text-3xl text-slate-300"></i>
+      <p class="mt-3 text-sm font-semibold text-slate-700">Aucun avis pour le moment</p>
     </div>
   </div>
 

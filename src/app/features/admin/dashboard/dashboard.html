@@ -1,6 +1,6 @@
 <div class="space-y-6 animate-fade-in pb-12">
   
-  <!-- Executive Header -->
+  
   <div class="bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 rounded-3xl p-6 sm:p-8 text-white border border-purple-800/40 shadow-2xl relative overflow-hidden">
     <div class="absolute -right-8 -bottom-8 w-60 h-60 bg-purple-500/10 rounded-full blur-3xl"></div>
     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -21,13 +21,13 @@
           routerLink="/admin/reparateurs"
           class="px-5 py-3 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition shadow-lg flex items-center gap-2">
           <i class="bi bi-shield-check text-base"></i>
-          <span>Modérer les Réparateurs (1 en attente)</span>
+          <span>Modérer les réparateurs<span *ngIf="stats()"> ({{ stats()!.reparateursEnAttente }} en attente)</span></span>
         </a>
       </div>
     </div>
   </div>
 
-  <!-- KPI Metrics Grid -->
+  
   <div *ngIf="stats()" class="grid grid-cols-2 lg:grid-cols-4 gap-4">
     
     <div class="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 shadow-lg">
@@ -60,7 +60,7 @@
         </div>
       </div>
       <p class="text-2xl font-black text-emerald-400">{{ (stats()!.chiffreAffairesTotal / 1000000).toFixed(2) }}M F</p>
-      <span class="text-[11px] text-slate-400 font-medium">12 450 000 FCFA</span>
+      <span class="text-[11px] text-slate-400 font-medium">Paiements effectués</span>
     </div>
 
     <div class="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 shadow-lg">
@@ -76,17 +76,17 @@
 
   </div>
 
-  <!-- Charts & Analytics Section -->
+  
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
     
-    <!-- Left: Category Distribution Chart Widget -->
+    
     <div class="lg:col-span-7 bg-slate-900/90 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-6">
       <div class="flex items-center justify-between pb-3 border-b border-slate-800">
         <div>
-          <h3 class="text-base font-black text-white">Répartition par Catégorie de Panne (IA)</h3>
-          <p class="text-xs text-slate-400">Diagnostics informatiques identifiés par l'agent IA</p>
+          <h3 class="text-base font-black text-white">Répartition par catégorie de panne</h3>
+          <p class="text-xs text-slate-400">Diagnostics informatiques enregistrés sur la plateforme</p>
         </div>
-        <span class="text-xs text-purple-400 font-bold">320 diagnostics</span>
+        <span class="text-xs text-purple-400 font-bold">{{ stats()?.totalDemandes || 0 }} demande(s)</span>
       </div>
 
       <div class="space-y-4">
@@ -99,10 +99,13 @@
             <div [class]="cat.color" class="h-full rounded-full transition-all duration-500" [style.width.%]="cat.percentage"></div>
           </div>
         </div>
+        <p *ngIf="categoryDistribution.length === 0" class="py-8 text-center text-xs text-slate-400">
+          Aucune donnée de diagnostic disponible.
+        </p>
       </div>
     </div>
 
-    <!-- Right: Recent Platform Events Log -->
+    
     <div class="lg:col-span-5 bg-slate-900/90 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-4">
       <div class="flex items-center justify-between pb-3 border-b border-slate-800">
         <h3 class="text-base font-black text-white flex items-center gap-2">
@@ -115,6 +118,9 @@
           <p class="text-xs text-slate-200 leading-relaxed">{{ log.text }}</p>
           <span class="text-[10px] text-slate-400 block">{{ log.time }}</span>
         </div>
+        <p *ngIf="recentLogs.length === 0" class="py-8 text-center text-xs text-slate-400">
+          Aucune activité récente.
+        </p>
       </div>
     </div>
 

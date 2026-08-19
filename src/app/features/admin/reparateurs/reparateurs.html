@@ -1,6 +1,6 @@
 <div class="space-y-6 animate-fade-in pb-12">
 
-  <!-- Header -->
+  
   <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 card-shadow">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    <!-- Filtres -->
+    
     <div class="mt-4 flex gap-2 flex-wrap">
       <button (click)="setFiltre('TOUS')"
         [class]="filtreStatut() === 'TOUS' ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
@@ -38,19 +38,19 @@
     </div>
   </div>
 
-  <!-- État vide -->
+  
   <div *ngIf="reparateursFiltres().length === 0" class="bg-white rounded-3xl p-12 border border-slate-200 card-shadow text-center">
     <i class="bi bi-person-x text-5xl text-slate-300"></i>
     <p class="text-slate-500 font-medium mt-3">Aucun réparateur dans cette catégorie.</p>
   </div>
 
-  <!-- Grid des réparateurs -->
+  
   <div *ngIf="reparateursFiltres().length > 0" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
 
     <div *ngFor="let rep of reparateursFiltres()"
       class="bg-white rounded-2xl p-5 border border-slate-200 card-shadow hover:border-purple-300 transition group">
 
-      <!-- Statut Badge -->
+      
       <div class="flex items-start justify-between mb-4">
         <div class="flex items-center gap-3">
           <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-white font-black text-base shadow-md"
@@ -70,7 +70,7 @@
         </span>
       </div>
 
-      <!-- Infos -->
+      
       <div class="space-y-1.5 mb-4">
         <p class="text-xs text-slate-600 flex items-center gap-1.5">
           <i class="bi bi-tools text-purple-500"></i>
@@ -90,7 +90,7 @@
         </p>
       </div>
 
-      <!-- Dossier status -->
+      
       <div class="mb-4 p-3 rounded-xl border"
         [ngClass]="rep.dossier?.carte_identite
           ? 'bg-emerald-50 border-emerald-200'
@@ -113,7 +113,7 @@
         </div>
       </div>
 
-      <!-- Actions -->
+      
       <div class="flex gap-2">
         <button (click)="ouvrirDossier(rep)"
           class="flex-1 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
@@ -133,13 +133,13 @@
 
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- Modal Dossier de Candidature               -->
-<!-- ═══════════════════════════════════════════ -->
+
+
+
 <div *ngIf="reparateurSelectionne()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
   <div class="bg-white rounded-3xl w-full max-w-xl shadow-2xl overflow-y-auto max-h-[90vh]">
 
-    <!-- Header modal -->
+    
     <div class="p-6 border-b border-slate-100 flex items-start justify-between">
       <div class="flex items-center gap-3">
         <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white font-black text-lg shadow">
@@ -157,7 +157,7 @@
 
     <div class="p-6 space-y-5">
 
-      <!-- Infos perso -->
+      
       <div class="grid grid-cols-2 gap-3">
         <div class="p-3 bg-slate-50 rounded-xl">
           <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Email</p>
@@ -181,7 +181,7 @@
         </div>
       </div>
 
-      <!-- Documents soumis -->
+      
       <div>
         <h4 class="text-xs font-black uppercase text-slate-500 mb-3 flex items-center gap-1.5">
           <i class="bi bi-folder2-open text-purple-500"></i> Pièces Justificatives
@@ -193,7 +193,7 @@
 
         <div *ngIf="reparateurSelectionne()!.dossier" class="space-y-3">
 
-          <!-- CNI -->
+          
           <div class="flex items-center justify-between p-3 rounded-xl border"
             [ngClass]="reparateurSelectionne()!.dossier!.carte_identite
               ? 'bg-emerald-50 border-emerald-200'
@@ -212,15 +212,15 @@
                 </p>
               </div>
             </div>
-            <a *ngIf="reparateurSelectionne()!.dossier!.carte_identite"
-              [href]="getDocumentUrl(reparateurSelectionne()!.dossier!.carte_identite)"
-              target="_blank"
+            <button *ngIf="reparateurSelectionne()!.dossier!.carte_identite"
+              type="button"
+              (click)="ouvrirDocument(reparateurSelectionne()!.dossier!.carte_identite)"
               class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-[11px] font-bold hover:bg-emerald-700 transition">
               <i class="bi bi-eye mr-1"></i> Voir
-            </a>
+            </button>
           </div>
 
-          <!-- Diplôme -->
+          
           <div class="flex items-center justify-between p-3 rounded-xl border"
             [ngClass]="reparateurSelectionne()!.dossier!.diplome_certification
               ? 'bg-emerald-50 border-emerald-200'
@@ -235,15 +235,15 @@
                 </p>
               </div>
             </div>
-            <a *ngIf="reparateurSelectionne()!.dossier!.diplome_certification"
-              [href]="getDocumentUrl(reparateurSelectionne()!.dossier!.diplome_certification)"
-              target="_blank"
+            <button *ngIf="reparateurSelectionne()!.dossier!.diplome_certification"
+              type="button"
+              (click)="ouvrirDocument(reparateurSelectionne()!.dossier!.diplome_certification)"
               class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-[11px] font-bold hover:bg-emerald-700 transition">
               <i class="bi bi-eye mr-1"></i> Voir
-            </a>
+            </button>
           </div>
 
-          <!-- CV -->
+          
           <div class="flex items-center justify-between p-3 rounded-xl border"
             [ngClass]="reparateurSelectionne()!.dossier!.cv
               ? 'bg-emerald-50 border-emerald-200'
@@ -258,22 +258,44 @@
                 </p>
               </div>
             </div>
-            <a *ngIf="reparateurSelectionne()!.dossier!.cv"
-              [href]="getDocumentUrl(reparateurSelectionne()!.dossier!.cv)"
-              target="_blank"
+            <button *ngIf="reparateurSelectionne()!.dossier!.cv"
+              type="button"
+              (click)="ouvrirDocument(reparateurSelectionne()!.dossier!.cv)"
               class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-[11px] font-bold hover:bg-emerald-700 transition">
               <i class="bi bi-eye mr-1"></i> Voir
-            </a>
+            </button>
           </div>
 
-          <!-- Date soumission -->
+          <div class="flex items-center justify-between p-3 rounded-xl border"
+            [ngClass]="reparateurSelectionne()!.dossier!.autre_document
+              ? 'bg-emerald-50 border-emerald-200'
+              : 'bg-slate-50 border-slate-200'">
+            <div class="flex items-center gap-2">
+              <i class="bi bi-paperclip text-lg"
+                [ngClass]="reparateurSelectionne()!.dossier!.autre_document ? 'text-emerald-600' : 'text-slate-400'"></i>
+              <div>
+                <p class="text-xs font-black text-slate-700">Autre justificatif</p>
+                <p class="text-[11px]" [ngClass]="reparateurSelectionne()!.dossier!.autre_document ? 'text-emerald-600' : 'text-slate-400'">
+                  {{ reparateurSelectionne()!.dossier!.autre_document ? '✓ Document fourni' : '○ Non fourni' }}
+                </p>
+              </div>
+            </div>
+            <button *ngIf="reparateurSelectionne()!.dossier!.autre_document"
+              type="button"
+              (click)="ouvrirDocument(reparateurSelectionne()!.dossier!.autre_document)"
+              class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-[11px] font-bold hover:bg-emerald-700 transition">
+              <i class="bi bi-eye mr-1"></i> Voir
+            </button>
+          </div>
+
+          
           <p *ngIf="reparateurSelectionne()!.dossier!.date_soumission" class="text-[11px] text-slate-400 text-right">
             Soumis le {{ reparateurSelectionne()!.dossier!.date_soumission | date:'dd/MM/yyyy à HH:mm' }}
           </p>
         </div>
       </div>
 
-      <!-- Commentaire admin -->
+      
       <div *ngIf="reparateurSelectionne()!.dossier?.commentaire_admin">
         <p class="text-xs font-black uppercase text-slate-400 mb-1">Note de l'administrateur</p>
         <p class="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200">
@@ -283,7 +305,7 @@
 
     </div>
 
-    <!-- Footer actions -->
+    
     <div class="p-6 pt-0 flex gap-3">
       <button (click)="fermerDossier()"
         class="flex-1 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition">

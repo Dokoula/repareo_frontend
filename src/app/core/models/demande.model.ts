@@ -4,6 +4,7 @@ import { Reparateur, CategorieCompetence } from './reparateur.model';
 export type StatutDemande =
   | 'EN_ATTENTE'
   | 'ASSIGNEE'
+  | 'ACCEPTEE'
   | 'DIAGNOSTIC'
   | 'DEVIS_ENVOYE'
   | 'DEVIS_ACCEPTE'
@@ -33,18 +34,19 @@ export interface CreateDemandeRequest {
   date_recuperation?: string | null;
 }
 
-export interface IAReparateurSuggestion {
+export interface ReparateurSuggestion {
   id: number;
   nom: string;
   ville: string;
-  note: number;
   experience: number;
 }
 
-export interface IAAnalysisResult {
+export interface MiseEnRelationResult {
   status: boolean;
+  demande_id: number;
   categorie: string | null;
   statut: StatutDemande;
   message?: string;
-  reparateurs: IAReparateurSuggestion[];
+  reparateurs: ReparateurSuggestion[];
+  analyse_par: 'OLLAMA' | 'ANALYSE_LOCALE' | 'RECHERCHE_ENREGISTREE';
 }

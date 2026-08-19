@@ -21,9 +21,13 @@ export class ClientMessagerie implements OnInit {
   nouveauMessage = signal<string>('');
 
   ngOnInit(): void {
-    this.messagerieService.getConversation(601).subscribe(c => {
-      this.conversation.set(c);
-      this.messages.set(c.messages || []);
+    this.messagerieService.getConversations().subscribe((conversations) => {
+      const first = conversations[0];
+      if (!first) return;
+      this.messagerieService.getConversation(first.id).subscribe((conversation) => {
+        this.conversation.set(conversation);
+        this.messages.set(conversation.messages || []);
+      });
     });
   }
 
@@ -31,7 +35,9 @@ export class ClientMessagerie implements OnInit {
     const text = this.nouveauMessage().trim();
     if (!text) return;
 
-    this.messagerieService.envoyerMessage(601, text).subscribe(res => {
+    const conversationId = this.conversation()?.id;
+    if (!conversationId) return;
+    this.messagerieService.envoyerMessage(conversationId, text).subscribe(res => {
       this.messages.update(prev => [...prev, res.data]);
       this.nouveauMessage.set('');
     });

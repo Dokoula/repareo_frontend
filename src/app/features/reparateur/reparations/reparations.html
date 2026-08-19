@@ -1,6 +1,6 @@
 <div class="space-y-6 animate-fade-in pb-12">
   
-  <!-- Header -->
+  
   <div class="bg-slate-800/90 rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-xl">
     <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 inline-block mb-2">
       Banc d'Intervention
@@ -9,6 +9,33 @@
     <p class="text-xs sm:text-sm text-slate-400 mt-1">
       Mettez à jour le statut des travaux pour tenir informé le client et clôturez l'intervention.
     </p>
+  </div>
+
+  <div *ngIf="devisEnAttenteClient().length > 0" class="bg-white rounded-2xl p-6 border border-amber-200 shadow-sm">
+    <h2 class="text-lg font-bold text-slate-900">En attente de la décision du client</h2>
+    <p class="text-sm text-slate-500 mt-1">Ces devis ont été transmis. La réparation pourra commencer dès leur acceptation.</p>
+    <div class="mt-4 space-y-3">
+      <div *ngFor="let devis of devisEnAttenteClient()" class="p-4 rounded-xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <p class="font-bold text-slate-900">{{ libelleDevis(devis) }}</p>
+          <p class="text-sm text-slate-600">Devis #{{ devis.id }} — {{ devis.montant_total.toLocaleString('fr-FR') }} FCFA</p>
+        </div>
+        <span class="px-3 py-1.5 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">Validation du client attendue</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="devisADemarrer().length > 0" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+    <h2 class="text-lg font-bold text-slate-900">Devis acceptés à démarrer</h2>
+    <div class="mt-4 space-y-3">
+      <div *ngFor="let devis of devisADemarrer()" class="p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <p class="font-bold text-slate-900">{{ libelleDevis(devis) }}</p>
+          <p class="text-sm text-slate-500">Devis #{{ devis.id }} — {{ devis.montant_total.toLocaleString('fr-FR') }} FCFA</p>
+        </div>
+        <button type="button" (click)="demarrer(devis)" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm">Démarrer la réparation</button>
+      </div>
+    </div>
   </div>
 
   <div class="space-y-6">
@@ -27,7 +54,7 @@
             <span class="text-xs text-slate-400">Intervention #{{ rep.id }}</span>
           </div>
           <h3 class="text-lg font-black text-white mt-1">
-            Dell XPS 15 9510 (Client : Marie Client)
+            {{ libelleReparation(rep) }}
           </h3>
         </div>
 
@@ -36,7 +63,7 @@
         </div>
       </div>
 
-      <!-- Workshop Progress Notes -->
+      
       <div class="p-5 rounded-2xl bg-slate-900 border border-slate-700 space-y-3">
         <h4 class="text-xs font-bold uppercase text-slate-400 flex items-center gap-2">
           <i class="bi bi-journal-text text-teal-400"></i> Rapport & Travaux effectués
@@ -48,10 +75,10 @@
           class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
       </div>
 
-      <!-- Control buttons -->
+      
       <div class="flex items-center justify-between pt-2">
         <span class="text-xs text-slate-400">
-          Devis associé : N° #301 (45 000 FCFA)
+          Devis associé : N° {{ devisId(rep) }} ({{ montant(rep).toLocaleString() }} FCFA)
         </span>
 
         <div class="flex items-center gap-3">
@@ -72,6 +99,11 @@
       </div>
 
     </div>
+  </div>
+
+  <div *ngIf="reparations().length === 0 && devisADemarrer().length === 0 && devisEnAttenteClient().length === 0" class="bg-white rounded-2xl p-10 border border-slate-200 text-center">
+    <p class="font-bold text-slate-900">Aucune réparation en cours</p>
+    <p class="mt-1 text-sm text-slate-500">Les devis acceptés par les clients apparaîtront ici.</p>
   </div>
 
 </div>

@@ -7,10 +7,10 @@
       </div>
       <div>
         <h1 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
-          Discussion avec Marie Client
+          Discussion avec {{ conversation()?.client?.user?.username || 'le client' }}
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
         </h1>
-        <p class="text-xs text-slate-400">Demande #101 • Dell XPS 15 9510</p>
+        <p class="text-xs text-slate-400" *ngIf="conversation() as conv">Demande #{{ conv.demande.id }} • {{ conv.demande.marque_ordinateur }} {{ conv.demande.modele_ordinateur }}</p>
       </div>
     </div>
 
@@ -19,7 +19,7 @@
     </span>
   </div>
 
-  <div class="bg-slate-800/90 rounded-3xl border border-slate-700 shadow-xl flex flex-col h-[520px] overflow-hidden">
+  <div *ngIf="conversation(); else aucuneConversation" class="bg-slate-800/90 rounded-3xl border border-slate-700 shadow-xl flex flex-col h-[520px] overflow-hidden">
     
     <div class="flex-1 p-6 overflow-y-auto space-y-4 bg-slate-900/50">
       <div
@@ -74,5 +74,9 @@
     </div>
 
   </div>
+
+  <ng-template #aucuneConversation>
+    <div class="bg-white rounded-2xl p-10 border border-slate-200 text-center text-slate-600">Aucune conversation disponible.</div>
+  </ng-template>
 
 </div>

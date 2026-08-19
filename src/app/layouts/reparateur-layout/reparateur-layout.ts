@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
   imports: [CommonModule, RouterModule],
   templateUrl: './reparateur-layout.html'
 })
-export class ReparateurLayout {
+export class ReparateurLayout implements OnInit {
   authService = inject(AuthService);
   reparateurService = inject(ReparateurService);
   router = inject(Router);
@@ -20,16 +20,35 @@ export class ReparateurLayout {
   disponibilite = signal<Disponibilite>('DISPONIBLE');
   isMobileMenuOpen = signal<boolean>(false);
   isUserMenuOpen = signal<boolean>(false);
+  compteValide = signal<boolean>(true);
 
   navItems = [
     { label: 'Tableau de bord Atelier', route: '/reparateur/dashboard', icon: 'bi-speedometer2' },
-    { label: 'Demandes Reçues', route: '/reparateur/demandes', icon: 'bi-inbox-fill', badge: '3' },
+    { label: 'Demandes Reçues', route: '/reparateur/demandes', icon: 'bi-inbox-fill' },
     { label: 'Diagnostics & Devis', route: '/reparateur/atelier', icon: 'bi-wrench-adjustable-circle-fill' },
     { label: 'Suivi des Réparations', route: '/reparateur/reparations', icon: 'bi-gear-wide-connected' },
     { label: 'Messagerie Clients', route: '/reparateur/messages', icon: 'bi-chat-left-text-fill' },
-    { label: 'Avis & Évaluations', route: '/reparateur/avis', icon: 'bi-star-half' },
+    { label: 'Messages Administration', route: '/reparateur/administration', icon: 'bi-shield-lock-fill' },
+    { label: 'Solde & Retraits', route: '/reparateur/portefeuille', icon: 'bi-wallet2' },
     { label: 'Mon Profil & Compétences', route: '/reparateur/profil', icon: 'bi-patch-check-fill' },
   ];
+
+  ngOnInit(): void {
+    this.reparateurService.getMonProfil().subscribe((profil) => {
+      this.disponibilite.set(profil.disponibilite);
+      this.compteValide.set(profil.statut_validation);
+      if (!profil.statut_validation) {
+        this.navItems = [
+          { label: 'Compléter mon dossier', route: '/reparateur/profil', icon: 'bi-file-earmark-arrow-up' },
+          { label: 'Messages Administration', route: '/reparateur/administration', icon: 'bi-shield-lock-fill' },
+        ];
+        const routesAutorisees = ['/reparateur/profil', '/reparateur/administration', '/reparateur/validation'];
+        if (!routesAutorisees.some(route => this.router.url.startsWith(route))) {
+          this.router.navigate(['/reparateur/validation']);
+        }
+      }
+    });
+  }
 
   setDisponibilite(status: Disponibilite): void {
     this.disponibilite.set(status);

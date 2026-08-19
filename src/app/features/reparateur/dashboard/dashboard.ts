@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth';
@@ -19,6 +19,10 @@ export class ReparateurDashboard implements OnInit {
   reparateurService = inject(ReparateurService);
 
   demandes = signal<Demande[]>([]);
+  demandesAConfirmerListe = computed(() => this.demandes().filter(demande => demande.statut === 'ASSIGNEE'));
+  demandesAConfirmer = computed(() => this.demandesAConfirmerListe().length);
+  interventionsEnCours = computed(() => this.demandes().filter(demande => ['ACCEPTEE', 'DIAGNOSTIC', 'DEVIS_ENVOYE', 'DEVIS_ACCEPTE', 'EN_REPARATION', 'PRET'].includes(demande.statut)).length);
+  interventionsTerminees = computed(() => this.demandes().filter(demande => demande.statut === 'TERMINEE').length);
 
   ngOnInit(): void {
     this.demandeService.getDemandes().subscribe(list => {
@@ -29,14 +33,21 @@ export class ReparateurDashboard implements OnInit {
   accepter(demande: Demande): void {
     this.reparateurService.accepterDemande(demande.id).subscribe({
       next: () => {
-        demande.statut = 'DIAGNOSTIC';
+        demande.statut = 'ACCEPTEE';
+        this.demandes.set([...this.demandes()]);
         Swal.fire({
           icon: 'success',
           title: 'Demande acceptée !',
-          text: `Vous avez pris en charge la demande #${demande.id}. Vous pouvez rédiger le diagnostic technique.`,
+          text: `La demande #${demande.id} a été acceptée. Le client doit maintenant confirmer l’envoi ou le dépôt de son matériel.`,
           confirmButtonColor: '#0D9488'
         });
-      }
+      },
+      error: error => Swal.fire({
+        icon: 'error',
+        title: 'Acceptation impossible',
+        text: error.error?.message || 'Une erreur est survenue.',
+        confirmButtonColor: '#0D9488'
+      })
     });
   }
 
@@ -61,7 +72,13 @@ export class ReparateurDashboard implements OnInit {
               text: 'La demande a été retirée de votre atelier.',
               confirmButtonColor: '#0D9488'
             });
-          }
+          },
+          error: error => Swal.fire({
+            icon: 'error',
+            title: 'Refus impossible',
+            text: error.error?.message || 'Une erreur est survenue.',
+            confirmButtonColor: '#0D9488'
+          })
         });
       }
     });

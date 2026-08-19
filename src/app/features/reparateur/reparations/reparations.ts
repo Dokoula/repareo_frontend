@@ -1,9 +1,12 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReparationService } from '../../../core/services/reparation.service';
 import { Reparation } from '../../../core/models/reparation.model';
+import { DevisService } from '../../../core/services/devis.service';
 import Swal from 'sweetalert2';
+import { Devis } from '../../../core/models/devis.model';
+import { forkJoin, Subject, takeUntil, timer } from 'rxjs';
 
 @Component({
   selector: 'app-reparateur-reparations',
@@ -11,29 +14,43 @@ import Swal from 'sweetalert2';
   imports: [CommonModule, FormsModule],
   templateUrl: './reparations.html'
 })
-export class ReparateurReparations implements OnInit {
+export class ReparateurReparations implements OnInit, OnDestroy {
   reparationService = inject(ReparationService);
+  devisService = inject(DevisService);
 
   reparations = signal<Reparation[]>([]);
-  commentaireFin = signal<string>('Composant d’alimentation remplacé, tests de tension 19.5V et stabilité 24h OK. Nettoyage interne effectué.');
+  devisADemarrer = signal<Devis[]>([]);
+  devisEnAttenteClient = signal<Devis[]>([]);
+  commentaireFin = signal<string>('');
+  private destroy$ = new Subject<void>();
 
   ngOnInit(): void {
-    this.reparationService.getReparationById(401).subscribe(rep => {
-      this.reparations.set([rep]);
-    });
+    this.chargerDonnees();
+    timer(15000, 15000).pipe(takeUntil(this.destroy$)).subscribe(() => this.chargerDonnees(false));
   }
 
-  demarrer(): void {
-    this.reparationService.demarrerReparation(301).subscribe({
-      next: (res) => {
-        this.reparations.set([res.reparation]);
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  demarrer(devis: Devis): void {
+    this.reparationService.demarrerReparation(devis.id).subscribe({
+      next: () => {
+        this.chargerDonnees();
         Swal.fire({
           icon: 'success',
-          title: 'Réparation démarrée !',
-          text: 'Le statut est passé à "EN_REPARATION". Le client peut suivre l’avancement.',
-          confirmButtonColor: '#0D9488'
+          title: 'Réparation démarrée',
+          text: 'Le client peut maintenant suivre son avancement.',
+          confirmButtonColor: '#2563EB'
         });
-      }
+      },
+      error: error => Swal.fire({
+        icon: 'error',
+        title: 'Démarrage impossible',
+        text: error.error?.message || 'Une erreur est survenue.',
+        confirmButtonColor: '#2563EB'
+      })
     });
   }
 
@@ -52,14 +69,63 @@ export class ReparateurReparations implements OnInit {
         this.reparationService.terminerReparation(r.id, this.commentaireFin()).subscribe({
           next: () => {
             r.statut = 'PRET';
+            this.reparations.set([...this.reparations()]);
             Swal.fire({
               icon: 'success',
               title: 'Réparation terminée !',
               text: 'L’intervention est clôturée avec succès.',
               confirmButtonColor: '#0D9488'
             });
-          }
+          },
+          error: error => Swal.fire({
+            icon: 'error',
+            title: 'Clôture impossible',
+            text: error.error?.message || 'Une erreur est survenue.',
+            confirmButtonColor: '#2563EB'
+          })
         });
+      }
+    });
+  }
+
+  devisId(reparation: Reparation): number {
+    return typeof reparation.devis === 'number' ? reparation.devis : reparation.devis.id;
+  }
+
+  montant(reparation: Reparation): number {
+    return typeof reparation.devis === 'number' ? 0 : reparation.devis.montant_total;
+  }
+
+  libelleDevis(devis: Devis): string {
+    if (typeof devis.diagnostic === 'number' || typeof devis.diagnostic.demande === 'number') return `Devis #${devis.id}`;
+    const demande = devis.diagnostic.demande;
+    return `${demande.marque_ordinateur} ${demande.modele_ordinateur} — ${demande.client.user.username}`;
+  }
+
+  libelleReparation(reparation: Reparation): string {
+    return typeof reparation.devis === 'number' ? `Intervention #${reparation.id}` : this.libelleDevis(reparation.devis);
+  }
+
+  private chargerDonnees(afficherErreur = true): void {
+    forkJoin({
+      reparations: this.reparationService.getReparations(),
+      devis: this.devisService.getDevisList()
+    }).subscribe({
+      next: ({ reparations, devis }) => {
+        this.reparations.set(reparations);
+        const devisDejaDemarres = new Set(reparations.map(item => this.devisId(item)));
+        this.devisADemarrer.set(devis.filter(item => item.statut_devis === 'ACCEPTE' && !devisDejaDemarres.has(item.id)));
+        this.devisEnAttenteClient.set(devis.filter(item => item.statut_devis === 'EN_ATTENTE' && !devisDejaDemarres.has(item.id)));
+      },
+      error: error => {
+        if (afficherErreur) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Réparations indisponibles',
+            text: error.error?.message || 'Impossible de charger les réparations.',
+            confirmButtonColor: '#2563EB'
+          });
+        }
       }
     });
   }

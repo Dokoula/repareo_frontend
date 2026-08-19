@@ -27,14 +27,14 @@ export class AuthService {
 
   private getStoredToken(): string | null {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem(TOKEN_KEY);
+      return localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY);
     }
     return null;
   }
 
   private getStoredUser(): User | null {
     if (typeof window !== 'undefined') {
-      const userStr = localStorage.getItem(USER_KEY);
+      const userStr = localStorage.getItem(USER_KEY) ?? sessionStorage.getItem(USER_KEY);
       if (userStr) {
         try {
           return JSON.parse(userStr);
@@ -53,8 +53,6 @@ export class AuthService {
   hasRole(role: RoleUtilisateur | RoleUtilisateur[]): boolean {
     const user = this.currentUser();
     if (!user) return false;
-
-    // Normalize role string (e.g. ADMIN vs ADMINISTRATEUR)
     const userRole = user.role === 'ADMIN' ? 'ADMINISTRATEUR' : user.role;
 
     if (Array.isArray(role)) {
@@ -67,33 +65,25 @@ export class AuthService {
     return targetRole === userRole;
   }
 
-  /**
-   * Authentification via la vraie base de données Django.
-   * En cas d'erreur réseau ou mauvais identifiants, l'erreur est propagée au composant.
-   */
-  login(data: LoginRequest, selectedRoleHint?: RoleUtilisateur): Observable<LoginResponse> {
+  
+  login(data: LoginRequest, remember = false): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(API.BASE_URL + API.AUTH.LOGIN, data).pipe(
       tap((res) => {
         if (res && res.access && res.user) {
-          this.setSession(res.access, res.refresh, res.user);
+          this.setSession(res.access, res.refresh, res.user, remember);
         }
       })
-      // No fallback mock: real errors are propagated to login component
     );
   }
 
-  /**
-   * Inscription via la vraie base de données Django.
-   * Le backend crée le compte Client ou Réparateur et renvoie les tokens JWT.
-   */
+  
   register(data: RegisterRequest): Observable<any> {
     return this.http.post<any>(API.BASE_URL + API.AUTH.REGISTER, data).pipe(
       tap((res) => {
         if (res && res.access && res.user) {
-          this.setSession(res.access, res.refresh, res.user);
+          this.setSession(res.access, res.refresh, res.user, true);
         }
       })
-      // No fallback mock: real errors are propagated to register component
     );
   }
 
@@ -102,19 +92,27 @@ export class AuthService {
       tap((user) => {
         this.currentUser.set(user);
         if (typeof window !== 'undefined') {
-          localStorage.setItem(USER_KEY, JSON.stringify(user));
+          const storage = localStorage.getItem(TOKEN_KEY) ? localStorage : sessionStorage;
+          storage.setItem(USER_KEY, JSON.stringify(user));
         }
       })
     );
   }
 
-  private setSession(token: string, refresh: string, user: User): void {
+  private setSession(token: string, refresh: string, user: User, remember: boolean): void {
     this.token.set(token);
     this.currentUser.set(user);
     if (typeof window !== 'undefined') {
-      localStorage.setItem(TOKEN_KEY, token);
-      localStorage.setItem(REFRESH_KEY, refresh);
-      localStorage.setItem(USER_KEY, JSON.stringify(user));
+      const storage = remember ? localStorage : sessionStorage;
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(REFRESH_KEY);
+      localStorage.removeItem(USER_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(REFRESH_KEY);
+      sessionStorage.removeItem(USER_KEY);
+      storage.setItem(TOKEN_KEY, token);
+      storage.setItem(REFRESH_KEY, refresh);
+      storage.setItem(USER_KEY, JSON.stringify(user));
     }
   }
 
@@ -125,6 +123,9 @@ export class AuthService {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(REFRESH_KEY);
       localStorage.removeItem(USER_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(REFRESH_KEY);
+      sessionStorage.removeItem(USER_KEY);
     }
     this.router.navigate(['/login']);
   }

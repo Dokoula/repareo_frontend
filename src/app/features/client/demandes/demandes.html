@@ -1,6 +1,6 @@
 <div class="space-y-6 animate-fade-in pb-12">
   
-  <!-- Top Title & Action -->
+  
   <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div>
       <h1 class="text-2xl font-black text-slate-900">Mes Demandes de Réparation</h1>
@@ -12,11 +12,11 @@
       routerLink="/client/nouvelle-demande"
       class="px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-500/20 transition flex items-center gap-2 self-start sm:self-center">
       <i class="bi bi-plus-lg"></i>
-      <span>Nouvelle Demande (IA)</span>
+      <span>Nouvelle demande</span>
     </a>
   </div>
 
-  <!-- Filter Pills -->
+  
   <div class="flex items-center gap-2 overflow-x-auto pb-1">
     <button
       (click)="setFilter('TOUS')"
@@ -56,7 +56,7 @@
     </button>
   </div>
 
-  <!-- Demandes Grid -->
+  
   <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
     <div
       *ngFor="let demande of filteredDemandes()"
@@ -82,7 +82,7 @@
         <div class="mt-4 pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-500">
           <div class="flex items-center justify-between">
             <span class="text-slate-400">Catégorie :</span>
-            <span class="font-bold text-slate-800">{{ demande.categorie_competence?.nom || 'Diagnostic IA' }}</span>
+            <span class="font-bold text-slate-800">{{ demande.categorie_competence?.nom || 'En attente de diagnostic' }}</span>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-slate-400">Réparateur assigné :</span>
@@ -101,7 +101,23 @@
             class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition">
             Consulter
           </button>
+          <button
+            *ngIf="demande.statut === 'EN_ATTENTE' && !demande.reparateur"
+            type="button"
+            (click)="relancerRecherche(demande)"
+            [disabled]="searchingDemandeId() === demande.id"
+            class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-xs font-bold transition shadow-xs">
+            {{ searchingDemandeId() === demande.id ? 'Recherche…' : 'Rechercher' }}
+          </button>
+          <button
+            *ngIf="demande.statut === 'ACCEPTEE'"
+            type="button"
+            (click)="confirmerEnvoi(demande)"
+            class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs">
+            Confirmer l’envoi
+          </button>
           <a
+            *ngIf="afficherDevis(demande.statut)"
             routerLink="/client/devis"
             class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-xs">
             Devis
@@ -112,10 +128,10 @@
     </div>
   </div>
 
-  <!-- Detail Modal -->
+  
   <div *ngIf="selectedDemande()" class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div (click)="closeDetail()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"></div>
-    <div class="relative bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl z-10 space-y-5 animate-fade-in border border-slate-100">
+    <div class="relative bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl z-10 space-y-5 animate-fade-in border border-slate-100">
       
       <div class="flex items-center justify-between pb-4 border-b border-slate-100">
         <div>
@@ -142,10 +158,46 @@
           <span class="text-slate-400 font-bold uppercase tracking-wider block mb-1">Technicien en charge</span>
           <p class="font-bold text-teal-800">{{ selectedDemande()!.reparateur!.user.username }} ({{ selectedDemande()!.reparateur!.user.ville }})</p>
         </div>
+
+        <div *ngIf="selectedDemande()!.statut === 'EN_ATTENTE' && !selectedDemande()!.reparateur" class="p-4 rounded-xl bg-blue-50 border border-blue-200">
+          <p class="font-bold text-blue-900">Aucun réparateur n’est encore assigné</p>
+          <p class="text-blue-800 mt-1">Vous pouvez relancer la recherche à tout moment. Les disponibilités sont vérifiées à nouveau dans votre zone.</p>
+          <button
+            type="button"
+            (click)="relancerRecherche(selectedDemande()!)"
+            [disabled]="searchingDemandeId() === selectedDemande()!.id"
+            class="mt-3 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold text-xs">
+            {{ searchingDemandeId() === selectedDemande()!.id ? 'Recherche en cours…' : 'Rechercher à nouveau' }}
+          </button>
+        </div>
+
+        <div *ngIf="rechercheResult() as resultat" class="space-y-3 pt-2">
+          <div class="flex items-center justify-between">
+            <p class="font-bold text-slate-900">Réparateurs disponibles</p>
+            <span class="text-[11px] text-slate-500">{{ resultat.reparateurs.length }} trouvé(s)</span>
+          </div>
+          <p *ngIf="resultat.reparateurs.length === 0" class="p-4 rounded-xl bg-slate-100 text-slate-700">
+            Aucun réparateur compatible n’est disponible actuellement dans votre zone. Vous pourrez relancer la recherche plus tard.
+          </p>
+          <div *ngFor="let reparateur of resultat.reparateurs" class="p-3 rounded-xl border border-slate-200 flex items-center justify-between gap-3">
+            <div>
+              <p class="font-bold text-slate-900">{{ reparateur.nom }}</p>
+              <p class="text-slate-500">{{ reparateur.ville }} • {{ reparateur.experience }} an(s) d’expérience</p>
+            </div>
+            <button type="button" (click)="assignerReparateur(reparateur)" class="px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs">Choisir</button>
+          </div>
+        </div>
       </div>
 
       <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
-        <a routerLink="/client/messages" (click)="closeDetail()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-800 font-bold text-xs">
+        <button
+          *ngIf="selectedDemande()!.statut === 'ACCEPTEE'"
+          type="button"
+          (click)="confirmerEnvoi(selectedDemande()!)"
+          class="px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs">
+          Confirmer l’envoi du matériel
+        </button>
+        <a *ngIf="selectedDemande()!.reparateur" routerLink="/client/messages" (click)="closeDetail()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-800 font-bold text-xs">
           Envoyer un message
         </a>
         <button (click)="closeDetail()" class="px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs">

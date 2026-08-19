@@ -1,0 +1,32 @@
+<div class="space-y-6 pb-12 animate-fade-in">
+  <section class="rounded-3xl border border-slate-800 bg-slate-900 p-6 sm:p-8">
+    <span class="rounded-full bg-amber-500/20 px-3 py-1 text-[11px] font-bold uppercase text-amber-300">Accès confidentiel</span>
+    <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <h1 class="text-2xl font-black text-white">Évaluations des réparateurs</h1>
+        <p class="mt-1 text-sm text-slate-400">Les notes et commentaires clients sont visibles uniquement par l’administration.</p>
+      </div>
+      <div class="rounded-2xl bg-slate-800 px-5 py-3 text-center">
+        <p class="text-2xl font-black text-amber-400">{{ moyenne() | number:'1.1-1' }} / 5</p>
+        <p class="text-[10px] text-slate-400">{{ avis().length }} évaluation(s)</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="space-y-4">
+    <article *ngFor="let item of avis()" class="rounded-3xl border border-slate-800 bg-slate-900 p-5">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="font-bold text-white">Réparateur : {{ item.reparateur.user.username }}</p>
+          <p class="text-xs text-slate-400">Client : {{ item.client.user.username }} · Réparation #{{ item.reparation }}</p>
+        </div>
+        <div class="flex gap-1 text-amber-400">
+          <i *ngFor="let etoile of [1,2,3,4,5]" [class]="etoile <= item.note ? 'bi bi-star-fill' : 'bi bi-star'"></i>
+        </div>
+      </div>
+      <p class="mt-4 rounded-2xl bg-slate-800 p-4 text-sm text-slate-200">{{ item.commentaire || 'Aucun commentaire.' }}</p>
+      <p class="mt-2 text-right text-[10px] text-slate-500">{{ item.date_avis | date:'medium' }}</p>
+    </article>
+    <p *ngIf="!avis().length" class="rounded-2xl border border-slate-800 bg-slate-900 py-12 text-center text-sm text-slate-400">Aucune évaluation enregistrée.</p>
+  </section>
+</div>

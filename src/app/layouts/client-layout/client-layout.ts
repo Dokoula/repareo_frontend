@@ -1,9 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { NotificationService } from '../../core/services/notification.service';
 import Swal from 'sweetalert2';
+import { Notification } from '../../core/models/notification.model';
+import { interval, startWith, Subject, switchMap, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-client-layout',
@@ -11,7 +13,7 @@ import Swal from 'sweetalert2';
   imports: [CommonModule, RouterModule],
   templateUrl: './client-layout.html'
 })
-export class ClientLayout {
+export class ClientLayout implements OnInit, OnDestroy {
   authService = inject(AuthService);
   notificationService = inject(NotificationService);
   router = inject(Router);
@@ -19,10 +21,12 @@ export class ClientLayout {
   isMobileMenuOpen = signal<boolean>(false);
   isNotificationMenuOpen = signal<boolean>(false);
   isUserMenuOpen = signal<boolean>(false);
+  notifications = signal<Notification[]>([]);
+  private destroy$ = new Subject<void>();
 
   navItems = [
     { label: 'Tableau de bord', route: '/client/dashboard', icon: 'bi-grid-1x2-fill' },
-    { label: 'Nouvelle Demande (IA)', route: '/client/nouvelle-demande', icon: 'bi-plus-circle-fill', highlight: true },
+    { label: 'Nouvelle demande', route: '/client/nouvelle-demande', icon: 'bi-plus-circle-fill', highlight: true },
     { label: 'Mes Demandes', route: '/client/demandes', icon: 'bi-laptop' },
     { label: 'Diagnostics & Devis', route: '/client/devis', icon: 'bi-file-earmark-check-fill' },
     { label: 'Paiements & Factures', route: '/client/paiements', icon: 'bi-credit-card-2-front-fill' },
@@ -30,6 +34,27 @@ export class ClientLayout {
     { label: 'Avis & Témoignages', route: '/client/avis', icon: 'bi-star-fill' },
     { label: 'Mon Profil', route: '/client/profil', icon: 'bi-person-circle' },
   ];
+
+  ngOnInit(): void {
+    interval(15000).pipe(
+      startWith(0),
+      switchMap(() => this.notificationService.getNotifications()),
+      takeUntil(this.destroy$)
+    ).subscribe((notifications) => this.notifications.set(notifications));
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  lireNotification(notification: Notification): void {
+    if (notification.lu) return;
+    this.notificationService.marquerCommeLue(notification.id).subscribe(() => {
+      notification.lu = true;
+      this.notifications.set([...this.notifications()]);
+    });
+  }
 
   toggleMobileMenu(): void {
     this.isMobileMenuOpen.update(v => !v);
